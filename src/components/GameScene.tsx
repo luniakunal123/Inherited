@@ -18,6 +18,10 @@ type Props = { playerName: string }
 export default function GameScene({ playerName }: Props) {
   const { state, choose, lockMessage } = useInkStory(playerName)
 
+  const [isPortrait, setIsPortrait] = useState(
+    window.innerHeight > window.innerWidth
+  )
+
   const tags = state.tags.reduce((acc, tag) => {
     const [k, ...v] = tag.split(':')
     acc[k.trim()] = v.join(':').trim()
@@ -26,11 +30,32 @@ export default function GameScene({ playerName }: Props) {
 
 
   const bg = BG_COLOURS[tags['background']] ?? '#000'
+  const readingDelay = Math.min(
+    7000,
+    Math.max(
+      2500,
+      state.paragraphs.join(' ').length * 25
+    )
+  )
 
-  const [statNotification, setStatNotification] = useState<string | null>(null)
-const [isNotificationLeaving, setIsNotificationLeaving] = useState(false)
-const notificationQueue = useRef<string[]>([])
+  const [pendingChanges, setPendingChanges] = useState<string[]>([])
+const [activeChange, setActiveChange] = useState<number>(-1)
+const [showStatPanel, setShowStatPanel] = useState(false)
 const [hitBar, setHitBar] = useState<string | null>(null)
+
+useEffect(() => {
+  const handleResize = () => {
+    setIsPortrait(
+      window.innerHeight > window.innerWidth
+    )
+  }
+
+  window.addEventListener('resize', handleResize)
+
+  return () => {
+    window.removeEventListener('resize', handleResize)
+  }
+}, [])
 
 const previousStats = useRef({
   composure: state.variables.composure ?? 100,
@@ -72,11 +97,7 @@ useEffect(() => {
   }
 
   if (notifications.length > 0) {
-    notificationQueue.current.push(...notifications)
-  
-    if (!statNotification) {
-      setStatNotification(notificationQueue.current.shift() ?? null)
-    }
+    setPendingChanges(notifications)
   }
 
   previousStats.current = {
@@ -87,40 +108,96 @@ useEffect(() => {
 }, [state.variables])
 
 useEffect(() => {
-  if (!statNotification) return
+  if (pendingChanges.length === 0) return
 
-  const timer = setTimeout(() => {
-    setIsNotificationLeaving(true)
+  let current = 0
 
-if (statNotification?.includes('COMPOSURE')) {
-  setTimeout(() => setHitBar('Composure'), 950)
-}
+  setActiveChange(-1)
+setShowStatPanel(false)
 
-if (statNotification?.includes('ENERGY')) {
-  setTimeout(() => setHitBar('Energy'), 950)
-}
+const startTimer = setTimeout(() => {
+  setShowStatPanel(true)
+  setActiveChange(0)
 
-if (statNotification?.includes('STRESS')) {
-  setTimeout(() => setHitBar('Stress'), 950)
-}
+    const interval = setInterval(() => {
+      const change = pendingChanges[current]
 
-setTimeout(() => setHitBar(null), 1200)
+      if (change.includes('COMPOSURE')) {
+        setHitBar('Composure')
+      }
 
-setTimeout(() => {
-  if (notificationQueue.current.length > 0) {
-    setStatNotification(
-      notificationQueue.current.shift() ?? null
-    )
-    setIsNotificationLeaving(false)
-  } else {
-    setStatNotification(null)
-    setIsNotificationLeaving(false)
+      if (change.includes('ENERGY')) {
+        setHitBar('Energy')
+      }
+
+      if (change.includes('STRESS')) {
+        setHitBar('Stress')
+      }
+
+      setTimeout(() => {
+        setHitBar(null)
+      }, 400)
+
+      current++
+
+      if (current >= pendingChanges.length) {
+        clearInterval(interval)
+
+        setTimeout(() => {
+          setPendingChanges([])
+          setActiveChange(-1)
+          setShowStatPanel(false)
+        }, 1200)
+      } else {
+        setActiveChange(current)
+      }
+    }, 1200)
+  }, readingDelay)
+
+  return () => {
+    clearTimeout(startTimer)
   }
-}, 900)
-  }, 1400)
+}, [pendingChanges, readingDelay])
 
-  return () => clearTimeout(timer)
-}, [statNotification])
+if (isPortrait) {
+  return (
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#000',
+        color: 'rgba(255,255,255,0.85)',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        textAlign: 'center',
+        padding: '2rem',
+      }}
+    >
+      <div
+        style={{
+          fontSize: '3rem',
+          marginBottom: '1rem',
+        }}
+      >
+        ↻
+      </div>
+
+      <p style={{ fontSize: '1.1rem' }}>
+        Turn the page.
+      </p>
+
+      <p
+        style={{
+          opacity: 0.6,
+          fontSize: '0.9rem',
+        }}
+      >
+        Some stories are wider than they are tall.
+      </p>
+    </div>
+  )
+}
   
 
   if (state.isEnded) {
@@ -196,54 +273,59 @@ setTimeout(() => {
 
 {(tags['character'] === 'papa_tired' || tags['character'] === 'papa_controlled') && (
   <>
-    <Bars
+  {showStatPanel && (
+    <div
+      style={{
+        position: 'fixed',
+        top: '70px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        background: 'rgba(0,0,0,0.4)',
+        border: '1px solid rgba(255,255,255,0.12)',
+        borderRadius: '12px',
+        padding: '16px 24px',
+        backdropFilter: 'blur(8px)',
+        minWidth: '300px',
+        zIndex: 1000,
+      }}
+    >
+      {pendingChanges.map((change, index) => (
+        <div
+          key={change}
+          style={{
+            padding: '6px 0',
+            fontFamily: 'monospace',
+      letterSpacing: '0.08em',
+            opacity:
+              index < activeChange
+                ? 0.2
+                : index === activeChange
+                ? 1
+                : 0.6,
+            transform:
+              index === activeChange
+                ? 'scale(1.05)'
+                : 'scale(1)',
+            transition: 'all 0.3s ease',
+          }}
+        >
+          {change}
+        </div>
+      ))}
+    </div>
+  )}
+
+<Bars
   composure={state.variables.composure ?? 100}
   energy={state.variables.energy ?? 80}
   stress={state.variables.stress ?? 30}
   hitBar={hitBar}
 />
-
-    {statNotification && (
-      <div
-      style={{
-        position: 'fixed',
-        top: isNotificationLeaving ? 'calc(100vh - 140px)' : '80px',
-        left: isNotificationLeaving ? 'calc(100vw - 160px)' : '50%',
-        transform: isNotificationLeaving
-          ? 'translate(-50%, -50%) scale(0.3)'
-          : 'translateX(-50%) scale(1)',
-    
-        opacity: isNotificationLeaving ? 0 : 1,
-    
-        transition:
-  'top 0.9s cubic-bezier(0.22,1,0.36,1), left 0.9s cubic-bezier(0.22,1,0.36,1), transform 0.9s cubic-bezier(0.22,1,0.36,1), opacity 0.9s ease',
-    
-        padding: '12px 18px',
-        background: 'rgba(0,0,0,0.4)',
-        border: '1px solid rgba(255,255,255,0.12)',
-        borderRadius: '10px',
-        backdropFilter: 'blur(8px)',
-        fontSize: '0.9rem',
-        fontWeight: 400,
-        textAlign: 'center',
-        letterSpacing: '0.12em',
-        zIndex: 1000,
-      }}
-    >
-        <span
-          style={{
-            color: 'rgba(255,255,255,0.92)',
-          }}
-        >
-          {statNotification}
-        </span>
-      </div>
-    )}
   </>
 )}
 
-</div> 
-)
+    </div>
+  )
 }
 
 
