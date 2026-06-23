@@ -218,7 +218,14 @@ if (isPortrait) {
 
         <div style={{ marginBottom: '2.5rem' }}>
           {state.paragraphs.map((p, i) => (
-            <p key={i} style={{ marginBottom: '0.5em' }}>{p}</p>
+            <p
+            key={i}
+            style={{
+              marginBottom: '0.5em',
+              fontSize: '0.95rem',
+              lineHeight: 1.6,
+            }}
+          >{p}</p>
           ))}
         </div>
 
@@ -283,9 +290,9 @@ if (isPortrait) {
         background: 'rgba(0,0,0,0.4)',
         border: '1px solid rgba(255,255,255,0.12)',
         borderRadius: '12px',
-        padding: '16px 24px',
+        padding: '10px 14px',
         backdropFilter: 'blur(8px)',
-        minWidth: '300px',
+        minWidth: '200px',
         zIndex: 1000,
       }}
     >
@@ -293,7 +300,8 @@ if (isPortrait) {
         <div
           key={change}
           style={{
-            padding: '6px 0',
+            padding: '3px 0',
+            fontSize: '0.75rem',
             fontFamily: 'monospace',
       letterSpacing: '0.08em',
             opacity:
@@ -399,7 +407,7 @@ function EndScreen() {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '100vh',
-      gap: '1.2em',
+      gap: '0.8em',
       textAlign: 'center',
       padding: '2rem',
     }}>
@@ -407,7 +415,7 @@ function EndScreen() {
         <p
           key={i}
           style={{
-            fontSize: '1.3rem',
+            fontSize: '1rem',
             opacity: visible > i ? 1 : 0,
             transition: 'opacity 0.8s ease',
             margin: 0,
@@ -443,8 +451,8 @@ function Bars({
         position: 'fixed',
         bottom: '24px',
         right: '24px',
-        width: '220px',
-        padding: '16px',
+        width: '170px',
+        padding: '10px',
         background: 'rgba(0,0,0,0.4)',
         backdropFilter: 'blur(8px)',
         border: '1px solid rgba(255,255,255,0.15)',
@@ -473,7 +481,7 @@ transition:
               display: 'flex',
               justifyContent: 'space-between',
               marginBottom: '6px',
-              fontSize: '0.95rem',
+              fontSize: '0.75rem',
             }}
           >
             <span>{stat.label}</span>
@@ -482,7 +490,7 @@ transition:
 
           <div
             style={{
-              height: '10px',
+              height: '6px',
               background: 'rgba(255,255,255,0.08)',
               borderRadius: '999px',
               overflow: 'hidden',
