@@ -163,7 +163,8 @@ if (isPortrait) {
   return (
     <div
       style={{
-        minHeight: '100vh',
+        height: '100vh',
+overflow: 'hidden',
         background: '#000',
         color: 'rgba(255,255,255,0.85)',
         display: 'flex',
@@ -212,11 +213,24 @@ if (isPortrait) {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      padding: '3rem 2rem',
+      padding: '1rem',
     }}>
-      <div style={{ maxWidth: '560px', width: '100%' }}>
+      <div
+  style={{
+    maxWidth: '560px',
+    width: '100%',
+    maxHeight: '100%',
+    overflow: 'hidden',
+  }}
+>
 
-        <div style={{ marginBottom: '2.5rem' }}>
+<div
+  style={{
+    marginBottom: '1rem',
+    maxHeight: '45vh',
+    overflowY: 'auto',
+  }}
+>
           {state.paragraphs.map((p, i) => (
             <p
             key={i}
