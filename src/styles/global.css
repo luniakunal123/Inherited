@@ -1,0 +1,40 @@
+:root {
+    --font-primary: 'Georgia', 'Times New Roman', serif;
+    --font-size-base: 1.05rem;
+    --font-size-small: 0.8rem;
+    --line-height: 1.9;
+    --letter-spacing: 0.015em;
+  
+    --color-text-primary: #d4cfc8;
+    --color-text-dim: rgba(212, 207, 200, 0.5);
+    --color-text-note: rgba(212, 207, 200, 0.35);
+  
+    --color-choice-normal-border: rgba(212, 207, 200, 0.18);
+    --color-choice-normal-text: rgba(212, 207, 200, 0.85);
+    --color-choice-locked-text: rgba(212, 207, 200, 0.3);
+    --color-choice-faint-border: rgba(139, 157, 195, 0.25);
+    --color-choice-faint-text: rgba(139, 157, 195, 0.65);
+  
+    --transition-bg: background-color 1.2s ease;
+    --transition-opacity: opacity 0.4s ease;
+    --transition-bars: height 0.6s ease;
+  
+    --max-content-width: 560px;
+    --character-pane-width: 340px;
+  }
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+  
+  body {
+    background: #000;
+    color: var(--color-text-primary);
+    font-family: var(--font-primary);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height);
+    letter-spacing: var(--letter-spacing);
+    -webkit-font-smoothing: antialiased;
+  }
