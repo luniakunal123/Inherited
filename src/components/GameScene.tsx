@@ -152,7 +152,7 @@ export default function GameScene({ playerName }: Props) {
       display: 'flex',
       alignItems: 'flex-end',
       justifyContent: 'center',
-      paddingBottom: '2rem',
+      paddingBottom: '1rem',
     }}>
 
       {/* LAYER 1 — background image */}
@@ -189,7 +189,7 @@ export default function GameScene({ playerName }: Props) {
           position: 'relative',
           zIndex: 2,
           width: '92%',
-          background: 'rgba(0,0,0,0.35)',
+          background: 'rgba(0,0,0,0.2)',
           borderRadius: '8px',
           padding: '0.8rem 1rem',
           backdropFilter: 'blur(8px)',
@@ -214,8 +214,8 @@ export default function GameScene({ playerName }: Props) {
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.5rem',
-            marginTop: '1rem',
+            gap: '0.35rem',
+          marginTop: '0.7rem',
           }}>
             {state.choices.map(choice => (
               <ChoiceButton
@@ -367,7 +367,7 @@ function ChoiceButton({
         fontSize: choice.isFaint ? '0.82rem' : '0.88rem',
         fontStyle: isLocked ? 'italic' : choice.isFaint ? 'italic' : 'normal',
         lineHeight: 1.6,
-        padding: '0.5rem 0.8rem',
+        padding: '0.35rem 0.7rem',
         textAlign: 'left',
         width: '100%',
         textDecoration: 'none',
