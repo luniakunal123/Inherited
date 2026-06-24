@@ -11,14 +11,14 @@ VAR stress = 30
 
 === act1_screen1 ===
 # character:none
-# background:black
+# image:Act1
 The results are out.
 [BREAK]
 -> act1_screen2
 
 === act1_screen2 ===
 # character:rahul_teen_neutral
-# background:classroom_day
+# image:Act1
 {player_name}, you are 16.
 Your phone is face-down on the desk.
 You put it there twenty minutes ago and haven't touched it since.
@@ -28,30 +28,48 @@ Everyone around you already knows.
 
 === act1_choice ===
 # character:rahul_teen_tense
-# background:classroom_day
+# image:Act2
 Rohan got 91. He told you without being asked.
 What do you do?
 
 * [Turn it over and look]
-    57 out of 100.
-    You read it three times.
-    -> act1_end
+    -> act1_choice_option1
 
 * [Ask Rohan to check for you]
-    Rohan reads it for you.
-    57 out of 100.
-    He says the number with a kind face.
-    That somehow makes it worse.
-    -> act1_end
+    -> act1_choice_option2
 
 * [Put it in your bag. You'll look at home.]
-    It will still be the same number at home.
-    You know this.
-    You put the phone in your bag anyway.
-    -> act1_end
+    -> act1_choice_option3
 
 * [LOCKED: Call home. Tell them before you see it yourself.]
     -> act1_choice
+
+=== act1_choice_option1 ===
+# character:rahul_teen_tense
+# image:Option1
+57 out of 100.
+You read it three times.
+[BREAK]
+-> act1_end
+
+=== act1_choice_option2 ===
+# character:rahul_teen_tense
+# image:Option2
+Rohan reads it for you.
+57 out of 100.
+He says the number with a kind face.
+That somehow makes it worse.
+[BREAK]
+-> act1_end
+
+=== act1_choice_option3 ===
+# character:rahul_teen_tense
+# image:Option3
+It will still be the same number at home.
+You know this.
+You put the phone in your bag anyway.
+[BREAK]
+-> act1_end
 
 === act1_end ===
 # character:none

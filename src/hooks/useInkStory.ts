@@ -78,7 +78,7 @@ export function useInkStory(playerName: string) {
     setLockMessage(null)
 
     const lines: string[] = []
-const currentTags: string[] = []
+    let currentTags: string[] = []
 
     while (story.canContinue) {
       const line = story.Continue() ?? ''
@@ -87,7 +87,7 @@ console.log('CURRENT TAGS:', story.currentTags)
 const tags = story.currentTags ?? []
 
 if (tags.length > 0) {
-  currentTags.push(...tags)
+  currentTags = [...tags]
 }
 
       if (line.trim() === '[BREAK]') {
@@ -130,6 +130,7 @@ console.log('FINAL TAGS GOING TO STATE', uniqueTags)
     (choice: InkChoice) => {
       if (choice.isLocked) {
         setLockMessage(choice.lockReason ?? null)
+        setTimeout(() => setLockMessage(null), 2000)
         return
       }
       const story = storyRef.current
