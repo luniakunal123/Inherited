@@ -108,8 +108,35 @@ export default function GameScene({ playerName }: Props) {
     return () => clearTimeout(timer)
   }, [state.paragraphs])
 
-  // Transition animation
+  // Speech synthesis — automatic on scene load
   useEffect(() => {
+    if (!speakTag) return
+    const text = speakTag === 'player_name' ? playerName : speakTag
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.pitch = 0.5
+    utterance.rate = 0.7
+    utterance.volume = 1
+
+    const loadVoices = () => {
+      const voices = window.speechSynthesis.getVoices()
+      const preferred =
+        voices.find(v => v.name.includes('मधुर')) ??
+        voices.find(v => v.lang === 'hi-IN') ??
+        voices[0]
+      if (preferred) utterance.voice = preferred
+      window.speechSynthesis.speak(utterance)
+    }
+
+    if (window.speechSynthesis.getVoices().length === 0) {
+      window.speechSynthesis.onvoiceschanged = () => loadVoices()
+    } else {
+      loadVoices()
+    }
+
+    return () => {
+      window.speechSynthesis.cancel()
+    }
+  }, [speakTag, playerName])
     if (!transitionTag) {
       setTransition('idle')
       return
@@ -244,24 +271,9 @@ export default function GameScene({ playerName }: Props) {
 
         {state.choices.length === 0 && showContinue && !transitionTag && (
           <button
-            onClick={() => {
-              // Speak player name if this scene has a speak tag
-              if (speakTag) {
-                const text = speakTag === 'player_name' ? playerName : speakTag
-                const utterance = new SpeechSynthesisUtterance(text)
-                utterance.pitch = 0.1
-                utterance.rate = 0.7
-                utterance.volume = 1
-                const voices = window.speechSynthesis.getVoices()
-                const preferred =
-                  voices.find(v => v.name.includes('मधुर')) ??
-                  voices.find(v => v.lang === 'hi-IN') ??
-                  voices[0]
-                if (preferred) utterance.voice = preferred
-                window.speechSynthesis.speak(utterance)
-              }
-              choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
-            }}
+          onClick={() => {
+            choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
+          }}
             style={{
               background: 'transparent', border: 'none',
               color: 'rgba(212,207,200,0.5)', cursor: 'pointer',
