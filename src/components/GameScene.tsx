@@ -3,9 +3,9 @@ import { useInkStory } from '../hooks/useInkStory'
 import type { InkChoice } from '../types'
 import Act1 from '../assets/backgrounds/Act1.png'
 import Act2 from '../assets/backgrounds/Act2.png'
-import Option1 from '../assets/backgrounds/AOption1.png'
-import Option2 from '../assets/backgrounds/AOption2.png'
-import Option3 from '../assets/backgrounds/AOption3.png'
+import Option1 from '../assets/backgrounds/Aoption1.png'
+import Option2 from '../assets/backgrounds/Aoption2.png'
+import Option3 from '../assets/backgrounds/Aoption3.png'
 
 const SCENE_IMAGES: Record<string, string> = {
   Act1,
