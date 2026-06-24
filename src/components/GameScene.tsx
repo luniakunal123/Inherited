@@ -48,11 +48,22 @@ export default function GameScene({ playerName }: Props) {
     )
   )
 
+  const [isPortrait, setIsPortrait] = useState(
+    window.innerHeight > window.innerWidth
+  )
   const [showContinue, setShowContinue] = useState(false)
   const [pendingChanges, setPendingChanges] = useState<string[]>([])
   const [activeChange, setActiveChange] = useState<number>(-1)
   const [showStatPanel, setShowStatPanel] = useState(false)
   const [hitBar, setHitBar] = useState<string | null>(null)
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsPortrait(window.innerHeight > window.innerWidth)
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   useEffect(() => {
     setShowContinue(false)
@@ -202,7 +213,7 @@ export default function GameScene({ playerName }: Props) {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%)',
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%)',
             zIndex: 1,
           }}
         />
@@ -214,14 +225,12 @@ export default function GameScene({ playerName }: Props) {
           position: 'relative',
           zIndex: 2,
           width: '92%',
-          background: 'rgba(0,0,0,0.0.25)',
+          background: 'rgba(0,0,0,0.25)',
           borderRadius: '8px',
           padding: '0.8rem 1rem',
-          backdropFilter: 'blur(2px)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          border: 'none',
         }}
       >
-        {/* Text paragraphs */}
         {state.paragraphs.map((p, i) => (
           <p
             key={i}
@@ -234,13 +243,12 @@ export default function GameScene({ playerName }: Props) {
           >{p}</p>
         ))}
 
-        {/* Choices appear below text */}
         {state.choices.length > 0 && (
           <div style={{
             display: 'flex',
             flexDirection: 'column',
             gap: '0.35rem',
-          marginTop: '0.7rem',
+            marginTop: '0.7rem',
           }}>
             {state.choices.map(choice => (
               <ChoiceButton
@@ -252,7 +260,6 @@ export default function GameScene({ playerName }: Props) {
           </div>
         )}
 
-        {/* Continue button */}
         {state.choices.length === 0 && showContinue && (
           <button
             onClick={() => choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })}
@@ -280,7 +287,6 @@ export default function GameScene({ playerName }: Props) {
         )}
       </div>
 
-      {/* Lock message — centered on screen */}
       {lockMessage && (
         <div
           style={{
@@ -296,7 +302,6 @@ export default function GameScene({ playerName }: Props) {
             padding: '1rem 2rem',
             background: 'rgba(0,0,0,0.55)',
             borderRadius: '8px',
-            backdropFilter: 'blur(2px)',
             border: '1px solid rgba(255,255,255,0.08)',
             maxWidth: '700px',
             whiteSpace: 'nowrap',
@@ -320,7 +325,6 @@ export default function GameScene({ playerName }: Props) {
                 border: '1px solid rgba(255,255,255,0.12)',
                 borderRadius: '12px',
                 padding: '10px 14px',
-                backdropFilter: 'blur(2px)',
                 minWidth: '200px',
                 zIndex: 1000,
               }}
