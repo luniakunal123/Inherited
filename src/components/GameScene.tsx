@@ -42,22 +42,6 @@ const BG_COLOURS: Record<string, string> = {
   black:                 '#000000',
 }
 
-function speakPlayerName(playerName: string) {
-  const text = playerName
-  const utterance = new SpeechSynthesisUtterance(text)
-  utterance.pitch = 5  // deeper
-utterance.rate = 6  // slower, more deliberate
-utterance.volume = 6
-  const voices = window.speechSynthesis.getVoices()
-  const preferred =
-    voices.find(v => v.name.includes('मधुर')) ??
-    voices.find(v => v.lang === 'hi-IN') ??
-    voices.find(v => v.lang === 'en-IN') ??
-    voices[0]
-  if (preferred) utterance.voice = preferred
-  window.speechSynthesis.speak(utterance)
-}
-
 type Props = { playerName: string }
 
 export default function GameScene({ playerName }: Props) {
@@ -89,7 +73,6 @@ export default function GameScene({ playerName }: Props) {
       return
     }
     if (sceneSound) {
-      // Only restart if the sound is actually different
       const currentSrc = audioRef.current?.src ?? ''
       const newSrc = new Audio(sceneSound).src
       if (!audioRef.current || !currentSrc.includes(newSrc.split('/').pop() ?? '')) {
@@ -99,7 +82,6 @@ export default function GameScene({ playerName }: Props) {
         audioRef.current.volume = sceneSound === SlapSound ? 0.8 : 0.3
         audioRef.current.play().catch(() => {})
       }
-      // Same sound already playing — do nothing, let it continue
     } else {
       audioRef.current?.pause()
       audioRef.current = null
@@ -125,40 +107,6 @@ export default function GameScene({ playerName }: Props) {
     const timer = setTimeout(() => setShowContinue(true), readingDelay)
     return () => clearTimeout(timer)
   }, [state.paragraphs])
-
-  const hasSpoken = useRef<string | null>(null)
-
-  // Speech synthesis
-  useEffect(() => {
-    if (!speakTag) return
-    if (hasSpoken.current === speakTag) return
-    hasSpoken.current = speakTag
-    const text = speakTag === 'player_name' ? playerName : speakTag
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.pitch = 5
-    utterance.rate = 6
-    utterance.volume = 6
-
-    const loadVoices = () => {
-      const voices = window.speechSynthesis.getVoices()
-      const preferred =
-                voices.find(v => v.name.includes('मधुर')) ??
-                voices.find(v => v.lang === 'hi-IN') ??
-                voices[0]
-      if (preferred) utterance.voice = preferred
-      window.speechSynthesis.speak(utterance)
-    }
-
-    if (window.speechSynthesis.getVoices().length === 0) {
-      window.speechSynthesis.onvoiceschanged = () => loadVoices()
-    } else {
-      loadVoices()
-    }
-
-    return () => {
-      window.speechSynthesis.cancel()
-    }
-  }, [speakTag, playerName])
 
   // Transition animation
   useEffect(() => {
@@ -259,8 +207,8 @@ export default function GameScene({ playerName }: Props) {
       justifyContent: 'center',
       paddingBottom: '1rem',
     }}>
-  
-        {sceneImage && (
+
+      {sceneImage && (
         <div style={{
           position: 'absolute', inset: 0,
           backgroundImage: `url(${sceneImage})`,
@@ -296,9 +244,24 @@ export default function GameScene({ playerName }: Props) {
 
         {state.choices.length === 0 && showContinue && !transitionTag && (
           <button
-          onClick={() => {
-            choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
-          }}
+            onClick={() => {
+              // Speak player name if this scene has a speak tag
+              if (speakTag) {
+                const text = speakTag === 'player_name' ? playerName : speakTag
+                const utterance = new SpeechSynthesisUtterance(text)
+                utterance.pitch = 0.1
+                utterance.rate = 0.7
+                utterance.volume = 1
+                const voices = window.speechSynthesis.getVoices()
+                const preferred =
+                  voices.find(v => v.name.includes('मधुर')) ??
+                  voices.find(v => v.lang === 'hi-IN') ??
+                  voices[0]
+                if (preferred) utterance.voice = preferred
+                window.speechSynthesis.speak(utterance)
+              }
+              choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
+            }}
             style={{
               background: 'transparent', border: 'none',
               color: 'rgba(212,207,200,0.5)', cursor: 'pointer',
