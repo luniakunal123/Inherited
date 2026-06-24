@@ -45,7 +45,7 @@ const BG_COLOURS: Record<string, string> = {
 function speakPlayerName(playerName: string) {
   const text = playerName
   const utterance = new SpeechSynthesisUtterance(text)
-  utterance.pitch = 7  // deeper
+  utterance.pitch = 5  // deeper
 utterance.rate = 6  // slower, more deliberate
 utterance.volume = 6
   const voices = window.speechSynthesis.getVoices()
@@ -135,7 +135,7 @@ export default function GameScene({ playerName }: Props) {
     hasSpoken.current = speakTag
     const text = speakTag === 'player_name' ? playerName : speakTag
     const utterance = new SpeechSynthesisUtterance(text)
-    utterance.pitch = 7
+    utterance.pitch = 5
     utterance.rate = 6
     utterance.volume = 6
 
