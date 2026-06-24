@@ -453,7 +453,7 @@ function Bars({
         width: '170px',
         padding: '10px',
         background: 'rgba(0,0,0,0.4)',
-        backdropFilter: 'blur(8px)',
+        backdropFilter: 'blur(4px)',
         border: '1px solid rgba(255,255,255,0.15)',
         borderRadius: '12px',
         zIndex: 999,
