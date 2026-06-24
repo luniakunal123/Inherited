@@ -45,9 +45,9 @@ const BG_COLOURS: Record<string, string> = {
 function speakPlayerName(playerName: string) {
   const text = playerName
   const utterance = new SpeechSynthesisUtterance(text)
-  utterance.pitch = 1  // deeper
-utterance.rate = 1  // slower, more deliberate
-utterance.volume = 1
+  utterance.pitch = 7  // deeper
+utterance.rate = 6  // slower, more deliberate
+utterance.volume = 6
   const voices = window.speechSynthesis.getVoices()
   const preferred =
     voices.find(v => v.name.includes('मधुर')) ??
@@ -135,9 +135,9 @@ export default function GameScene({ playerName }: Props) {
     hasSpoken.current = speakTag
     const text = speakTag === 'player_name' ? playerName : speakTag
     const utterance = new SpeechSynthesisUtterance(text)
-    utterance.pitch = 1
-    utterance.rate = 1
-    utterance.volume = 1
+    utterance.pitch = 7
+    utterance.rate = 6
+    utterance.volume = 6
 
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices()
