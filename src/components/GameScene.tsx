@@ -192,7 +192,7 @@ export default function GameScene({ playerName }: Props) {
           background: 'rgba(0,0,0,0.0.25)',
           borderRadius: '8px',
           padding: '0.8rem 1rem',
-          backdropFilter: 'blur(8px)',
+          backdropFilter: 'blur(2px)',
           border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
@@ -271,7 +271,7 @@ export default function GameScene({ playerName }: Props) {
             padding: '1rem 2rem',
             background: 'rgba(0,0,0,0.55)',
             borderRadius: '8px',
-            backdropFilter: 'blur(6px)',
+            backdropFilter: 'blur(2px)',
             border: '1px solid rgba(255,255,255,0.08)',
             maxWidth: '700px',
             whiteSpace: 'nowrap',
@@ -295,7 +295,7 @@ export default function GameScene({ playerName }: Props) {
                 border: '1px solid rgba(255,255,255,0.12)',
                 borderRadius: '12px',
                 padding: '10px 14px',
-                backdropFilter: 'blur(8px)',
+                backdropFilter: 'blur(2px)',
                 minWidth: '200px',
                 zIndex: 1000,
               }}
