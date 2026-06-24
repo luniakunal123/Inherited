@@ -4,15 +4,6 @@ import type { StoryState, InkChoice, InkVariables } from '../types'
 
 import inkJson from '../story/scene01.json'
 
-function parseTags(tags: string[]): Record<string, string> {
-  const result: Record<string, string> = {}
-  tags.forEach(tag => {
-    const [key, ...rest] = tag.split(':')
-    result[key.trim()] = rest.join(':').trim()
-  })
-  return result
-}
-
 const LOCK_REASONS: Record<string, string> = {
   'Call home. Tell them before you see it yourself.': "Your hand stopped before you got there. You don't know why.",
   'Ask her to sit with you when you tell him.': "You don't have this. You don't know yet that you can ask for that.",
@@ -82,8 +73,6 @@ export function useInkStory(playerName: string) {
 
     while (story.canContinue) {
       const line = story.Continue() ?? ''
-      console.log('LINE:', line)
-console.log('CURRENT TAGS:', story.currentTags)
 const tags = story.currentTags ?? []
 
 if (tags.length > 0) {
@@ -101,11 +90,7 @@ if (tags.length > 0) {
 
     const variables = readVariables(story)
     const currentChoices = story.currentChoices
-
-    console.log('FINAL TAGS GOING TO STATE:', currentTags)
     const uniqueTags = [...new Set(currentTags)]
-
-console.log('FINAL TAGS GOING TO STATE', uniqueTags)
 
     setState({
       paragraphs: lines,

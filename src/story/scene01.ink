@@ -35,6 +35,9 @@ Everyone around you already knows.
 Rohan got 91. He told you without being asked.
 What do you do?
 
+* [LOCKED: Call home. Tell them before you see it yourself.]
+    -> act1_choice
+
 * [Turn it over and look]
     -> act1_choice_option1
 
@@ -44,8 +47,7 @@ What do you do?
 * [Put it in your bag. You'll look at home.]
     -> act1_choice_option3
 
-* [LOCKED: Call home. Tell them before you see it yourself.]
-    -> act1_choice
+
 
 === act1_choice_option1 ===
 # character:rahul_teen_tense
@@ -78,20 +80,15 @@ You put the phone in your bag anyway.
 === act1_end ===
 # character:none
 # background:black
--> act1_to_act2
-
-=== act1_to_act2 ===
-# character:none
-# background:fade_grey
+# transition:eight_years_earlier
 [BREAK]
 -> act2_screen1
 
 === act2_screen1 ===
 # character:rahul_child_neutral
-# background:home_entrance_evening
-The floor is cold under your feet.
-That's the first thing.
-You are sitting outside the kitchen because Mummy said wait there,
+# image:Act4
+# sound:Kitchen
+You are sitting outside the kitchen,
 and you are waiting,
 and through the door you can hear the phone being put down.
 Papa is home early.
@@ -101,67 +98,75 @@ He is never home early.
 
 === act2_screen2 ===
 # character:rahul_child_neutral
-# background:home_entrance_evening
-You are eight years old.
+# image:Act4
+# sound:Kitchen
 Your class test came back today.
 64 out of 100.
-You don't know yet that this number will live in this house for the next three weeks.
-You only know that it is in your bag and your bag is in the other room and Papa's chappals are at the door.
+You don't know this number will haunt the house for weeks.
+You only know it's in your bag, and Papa is home.
 [BREAK]
 -> act2_choice1
 
 === act2_choice1 ===
 # character:rahul_child_tense
-# background:home_entrance_evening
+# image:Act5
+# sound:Room
 Mummy comes out of the kitchen.
 She sees your face.
 She already knows something happened at school —
 teachers have a way of calling before the children get home.
+[BREAK]
+-> act2_choice22
+
+=== act2_choice22 ===
+# image:Act5
+# sound:Room
 She doesn't say anything yet.
 She just looks at you.
 
 * [Tell her before Papa sees]
     ~ stress = stress + 10
-    You say the number out loud.
-    It sounds smaller when you say it.
     -> act2_papa_calls
 
 * [Ask her what Papa already knows]
     ~ stress = stress + 15
-    She looks at the kitchen door.
-    That's her answer.
     -> act2_papa_calls
 
 * [Say nothing. Wait.]
     ~ stress = stress + 20
-    The waiting is its own answer.
     -> act2_papa_calls
 
 * [PERMANENT: Ask her to sit with you when you tell him.]
-    -> act2_choice1
+    -> act2_choice22
 
 === act2_papa_calls ===
 # character:rahul_child_tense
-# background:home_entrance_evening
+# image:Act6
+# sound:silence
+# speak:player_name
 Papa's voice comes from the other room.
 "{player_name}."
 Just your name. Nothing else.
-You have learned to read everything in the way he says it.
-Tonight it means: I already know.
-Tonight it means: come here.
+"You've learned to read the way he says things."
+Tonight it means: I already know. Come here.
 [BREAK]
 -> act2_living_room
 
 === act2_living_room ===
 # character:rahul_child_fear
-# background:living_room_night
+# image:Act7
+# sound:Room
 The living room feels smaller at night.
-Papa is in his chair.
-He hasn't changed out of his office clothes yet.
+Papa is in his chair, still in his office clothes.
 That means he came straight to this.
 The test paper is on the arm of the chair.
-You don't know how it got there.
-Your bag was in the other room.
+You don't know how it got there. Your bag was in the other room.
+[BREAK]
+-> act2_living_room2
+
+=== act2_living_room2 ===
+# image:Act7
+# sound:Room
 He doesn't look angry.
 That's the thing nobody tells you —
 it's worse when they don't look angry.
@@ -171,15 +176,22 @@ And like you made him that way.
 -> act2_choice2
 
 === act2_choice2 ===
+# image:Act8
 # character:rahul_child_fear
 # background:living_room_night
+# sound:Room
 He picks up the paper.
 He holds it the way you'd hold something you found in the drain.
-64.
-He says the number once.
+64. He says the number once.
 Then: "Rohan's father called me today."
-At the office.
 "He wanted to know if everything was okay at home."
+[BREAK]
+-> act2_choice23
+
+=== act2_choice23 ===
+# image:Act9
+# sound:Room
+What do i tell him?
 
 * ["I'll do better next time."]
     ~ stress = stress + 10
@@ -198,11 +210,12 @@ At the office.
     -> act2_slap
 
 * [PERMANENT: "I didn't understand the chapter. I was scared to ask."]
-    -> act2_choice2
+    -> act2_choice23
 
 === act2_slap ===
 # character:rahul_child_fear
-# background:living_room_night
+# image:Act9
+# sound:silence
 "What do I tell people."
 He doesn't say it like a question.
 A pause that is one beat too long.
@@ -210,38 +223,51 @@ A pause that is one beat too long.
 -> act2_slap2
 
 === act2_slap2 ===
-It's fast.
+# image:Act10
+# sound:silence
+It's fast. 
 You don't see his hand.
 You only feel the heat on your cheek
-and then the room is very loud
-and then very quiet
-and Mummy is in the kitchen doorway
-and she doesn't move
+and then the room is very loud and then very quiet
 and you learn something in that second
-that you will carry for eight years
-without ever putting a name to it.
+that you will carry for eight years without ever putting a name to it.
+[BREAK]
+-> act2_time_skip
+
+=== act2_time_skip ===
+# character:none
+# background:black
+# transition:three_days_later
 [BREAK]
 -> act2_geometry_box
 
 === act2_geometry_box ===
 # character:rahul_child_neutral
-# background:bedroom_day
-Three days later.
+# image:Act11
+# sound:Room
 Papa comes home and puts something on your desk.
-He doesn't say anything.
-He doesn't meet your eye.
+He doesn't say anything. He doesn't meet your eye.
 He goes to wash his hands.
 It's a geometry box.
 The good kind. German compass.
-The one you pointed at in the shop three months ago
-and he said not now.
+[BREAK]
+-> act2_geometry_box2
+
+=== act2_geometry_box2 ===
+# image:Act11
+# sound:Room
 You sit there for a long time.
-You are eight years old
-and you already understand
+And you understand
 that this is the only language he has for sorry.
-That it isn't quite sorry.
-That you will take it anyway.
+That it isn't quite sorry. That you will take it anyway.
 Because it is what there is.
+[BREAK]
+-> act2_to_act3
+
+=== act2_to_act3 ===
+# character:none
+# background:black
+# transition:hold_onto_that
 [BREAK]
 -> act3_screen1
 
@@ -372,6 +398,9 @@ It has been there for twenty-three minutes.
 # background:classroom_day
 What do you do?
 
+* [LOCKED: Call home. Tell them before you see it yourself.]
+    -> act4_call_home
+
 * [Turn it over and look]
     You look at the number.
     You put the phone back down.
@@ -385,9 +414,6 @@ What do you do?
 * [Put it in your bag. You'll look at home.]
     The bag goes on your shoulder.
     -> act4_ending
-
-* [LOCKED: Call home. Tell them before you see it yourself.]
-    -> act4_call_home
 
 === act4_call_home ===
 # character:rahul_teen_neutral
