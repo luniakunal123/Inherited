@@ -187,6 +187,10 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
       transition: 'background-color 1.2s ease',
       position: 'relative',
       overflow: 'hidden',
+      display: 'flex',
+      alignItems: 'flex-end',
+      justifyContent: 'center',
+      paddingBottom: '2rem',
     }}>
 
       {/* ✅ LAYER 1 — background image, stretched to fill the whole page */}
@@ -196,7 +200,7 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
             position: 'absolute', // pulls it out of normal flow
             inset: 0,             // shorthand for top/right/bottom/left: 0
             backgroundImage: `url(${sceneImage})`,
-            backgroundSize: 'cover',
+            backgroundSize: '100% 100%',
             backgroundPosition: 'center',
             opacity: 0.6,        // dim so dark tone is preserved
             transition: 'opacity 0.8s ease',
@@ -218,23 +222,21 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
       )}
 
       {/* ✅ LAYER 3 — all your text, choices, everything the player reads */}
-      {/* ✅ LAYER 3a — text panel, bottom left */}
+      {/* ✅ LAYER 3 — single centered panel */}
       <div
         style={{
-          position: 'absolute',
-          bottom: '2rem',
-          left: '2rem',
-          width: '38%',
-          maxHeight: '40vh',
-          overflowY: 'auto',
+          position: 'relative',
           zIndex: 2,
+          width: '90%',
+          maxWidth: '700px',
           background: 'rgba(0,0,0,0.35)',
           borderRadius: '8px',
-          padding: '1.2rem 1.5rem',
+          padding: '1.5rem 2rem',
           backdropFilter: 'blur(8px)',
           border: '1px solid rgba(255,255,255,0.08)',
         }}
       >
+        {/* Text paragraphs */}
         {state.paragraphs.map((p, i) => (
           <p
             key={i}
@@ -248,7 +250,25 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
           >{p}</p>
         ))}
 
-        {/* continue button sits in text panel when no choices */}
+        {/* Choices appear below text */}
+        {state.choices.length > 0 && (
+          <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '0.6rem',
+            marginTop: '1.2rem',
+          }}>
+            {state.choices.map(choice => (
+              <ChoiceButton
+                key={choice.index}
+                choice={choice}
+                onChoose={choose}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Continue button */}
         {state.choices.length === 0 && showContinue && (
           <button
             onClick={() => choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })}
@@ -265,7 +285,7 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
               gap: '0.6rem',
               letterSpacing: '0.08em',
               transition: 'color 0.3s ease',
-              marginTop: '0.8rem',
+              marginTop: '1rem',
             }}
             onMouseEnter={e => (e.currentTarget.style.color = 'rgba(212,207,200,1)')}
             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(212,207,200,0.5)')}
@@ -275,63 +295,6 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
           </button>
         )}
       </div>
-
-      {/* ✅ LAYER 3b — choices panel, bottom right (only when choices exist) */}
-      {state.choices.length > 0 && (
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '2rem',
-            right: '2rem',
-            width: '38%',
-            maxHeight: '40vh',
-            overflowY: 'auto',
-            zIndex: 2,
-            background: 'rgba(0,0,0,0.35)',
-            borderRadius: '8px',
-            padding: '1.2rem 1.5rem',
-            backdropFilter: 'blur(8px)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.6rem',
-          }}
-        >
-          {state.choices.map(choice => (
-            <ChoiceButton
-              key={choice.index}
-              choice={choice}
-              onChoose={choose}
-            />
-          ))}
-        </div>
-      )}
-
-{lockMessage && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            zIndex: 100,
-            color: 'rgba(212,207,200,0.85)',
-            fontSize: '0.95rem',
-            fontStyle: 'italic',
-            textAlign: 'center',
-            padding: '1rem 2rem',
-            background: 'rgba(0,0,0,0.55)',
-            borderRadius: '8px',
-            backdropFilter: 'blur(6px)',
-            border: '1px solid rgba(255,255,255,0.08)',
-            maxWidth: '700px',
-            whiteSpace: 'nowrap',
-            pointerEvents: 'none',
-          }}
-        >
-          {lockMessage}
-        </div>
-      )}
 
       {(tags['character'] === 'papa_tired' || tags['character'] === 'papa_controlled') && (
         <>
