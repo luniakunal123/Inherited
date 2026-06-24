@@ -31,11 +31,6 @@ type Props = { playerName: string }
 export default function GameScene({ playerName }: Props) {
   const { state, choose, lockMessage } = useInkStory(playerName)
 
-  const [isPortrait, setIsPortrait] = useState(
-    window.innerHeight > window.innerWidth
-  )
-
-  // ✅ FIX: sceneImage is now derived AFTER tags is built
   const tags = state.tags.reduce((acc, tag) => {
     const [k, ...v] = tag.split(':')
     acc[k.trim()] = v.join(':').trim()
@@ -43,8 +38,8 @@ export default function GameScene({ playerName }: Props) {
   }, {} as Record<string, string>)
 
   const sceneImage = SCENE_IMAGES[tags['image']] ?? null
-
   const bg = BG_COLOURS[tags['background']] ?? '#000'
+
   const readingDelay = Math.min(
     7000,
     Math.max(
@@ -54,7 +49,7 @@ export default function GameScene({ playerName }: Props) {
   )
 
   const [showContinue, setShowContinue] = useState(false)
-const [pendingChanges, setPendingChanges] = useState<string[]>([])
+  const [pendingChanges, setPendingChanges] = useState<string[]>([])
   const [activeChange, setActiveChange] = useState<number>(-1)
   const [showStatPanel, setShowStatPanel] = useState(false)
   const [hitBar, setHitBar] = useState<string | null>(null)
@@ -66,14 +61,6 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
     }, readingDelay)
     return () => clearTimeout(timer)
   }, [state.paragraphs])
-  
-  useEffect(() => {
-      const handleResize = () => {
-        setIsPortrait(window.innerHeight > window.innerWidth)
-      }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
 
   const previousStats = useRef({
     composure: state.variables.composure ?? 100,
@@ -151,31 +138,6 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
     return () => clearTimeout(startTimer)
   }, [pendingChanges, readingDelay])
 
-  if (isPortrait) {
-    return (
-      <div
-        style={{
-          height: '100vh',
-          overflow: 'hidden',
-          background: '#000',
-          color: 'rgba(255,255,255,0.85)',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          alignItems: 'center',
-          textAlign: 'center',
-          padding: '2rem',
-        }}
-      >
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>↻</div>
-        <p style={{ fontSize: '1.1rem' }}>Turn the page.</p>
-        <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>
-          Some stories are wider than they are tall.
-        </p>
-      </div>
-    )
-  }
-
   if (state.isEnded) {
     return <EndScreen />
   }
@@ -193,45 +155,43 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
       paddingBottom: '2rem',
     }}>
 
-      {/* ✅ LAYER 1 — background image, stretched to fill the whole page */}
+      {/* LAYER 1 — background image */}
       {sceneImage && (
         <div
           style={{
-            position: 'absolute', // pulls it out of normal flow
-            inset: 0,             // shorthand for top/right/bottom/left: 0
+            position: 'absolute',
+            inset: 0,
             backgroundImage: `url(${sceneImage})`,
-            backgroundSize: '100% 100%',
+            backgroundSize: 'cover',
             backgroundPosition: 'center',
-            opacity: 0.6,        // dim so dark tone is preserved
+            opacity: 0.6,
             transition: 'opacity 0.8s ease',
-            zIndex: 0,            // sits at the very back
+            zIndex: 0,
           }}
         />
       )}
 
-      {/* ✅ LAYER 2 — dark gradient on top of the image, makes text readable */}
+      {/* LAYER 2 — gradient overlay */}
       {sceneImage && (
         <div
           style={{
             position: 'absolute',
             inset: 0,
             background: 'linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%)',
-            zIndex: 1,            // sits on top of the image
+            zIndex: 1,
           }}
         />
       )}
 
-      {/* ✅ LAYER 3 — all your text, choices, everything the player reads */}
-      {/* ✅ LAYER 3 — single centered panel */}
+      {/* LAYER 3 — single centered panel */}
       <div
         style={{
           position: 'relative',
           zIndex: 2,
-          width: '90%',
-          maxWidth: '560px',
+          width: '92%',
           background: 'rgba(0,0,0,0.35)',
           borderRadius: '8px',
-          padding: '1.5rem 2rem',
+          padding: '0.8rem 1rem',
           backdropFilter: 'blur(8px)',
           border: '1px solid rgba(255,255,255,0.08)',
         }}
@@ -241,8 +201,7 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
           <p
             key={i}
             style={{
-              marginBottom: '0.5em',
-              fontSize: '0.95rem',
+              fontSize: '0.85rem',
               lineHeight: 1.6,
               margin: 0,
               marginBottom: '0.5em',
@@ -255,8 +214,8 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
           <div style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: '0.6rem',
-            marginTop: '1.2rem',
+            gap: '0.5rem',
+            marginTop: '1rem',
           }}>
             {state.choices.map(choice => (
               <ChoiceButton
@@ -278,14 +237,14 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
               color: 'rgba(212,207,200,0.5)',
               cursor: 'pointer',
               fontFamily: 'inherit',
-              fontSize: '0.9rem',
+              fontSize: '0.85rem',
               padding: '0',
               display: 'flex',
               alignItems: 'center',
               gap: '0.6rem',
               letterSpacing: '0.08em',
               transition: 'color 0.3s ease',
-              marginTop: '1rem',
+              marginTop: '0.8rem',
             }}
             onMouseEnter={e => (e.currentTarget.style.color = 'rgba(212,207,200,1)')}
             onMouseLeave={e => (e.currentTarget.style.color = 'rgba(212,207,200,0.5)')}
@@ -295,6 +254,33 @@ const [pendingChanges, setPendingChanges] = useState<string[]>([])
           </button>
         )}
       </div>
+
+      {/* Lock message — centered on screen */}
+      {lockMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 100,
+            color: 'rgba(212,207,200,0.85)',
+            fontSize: '0.9rem',
+            fontStyle: 'italic',
+            textAlign: 'center',
+            padding: '1rem 2rem',
+            background: 'rgba(0,0,0,0.55)',
+            borderRadius: '8px',
+            backdropFilter: 'blur(6px)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            maxWidth: '700px',
+            whiteSpace: 'nowrap',
+            pointerEvents: 'none',
+          }}
+        >
+          {lockMessage}
+        </div>
+      )}
 
       {(tags['character'] === 'papa_tired' || tags['character'] === 'papa_controlled') && (
         <>
@@ -378,10 +364,10 @@ function ChoiceButton({
           : 'rgba(212,207,200,0.85)',
         cursor: 'pointer',
         fontFamily: 'inherit',
-        fontSize: choice.isFaint ? 'clamp(0.75rem, 2vw, 0.92rem)' : 'clamp(0.8rem, 2vw, 1rem)',
+        fontSize: choice.isFaint ? '0.82rem' : '0.88rem',
         fontStyle: isLocked ? 'italic' : choice.isFaint ? 'italic' : 'normal',
         lineHeight: 1.6,
-        padding: 'clamp(0.4rem, 1.5vw, 0.6rem) clamp(0.6rem, 2vw, 1rem)',
+        padding: '0.5rem 0.8rem',
         textAlign: 'left',
         width: '100%',
         textDecoration: 'none',
@@ -415,15 +401,14 @@ function EndScreen() {
 
   return (
     <div style={{
-      minHeight: '100vh',
-      backgroundColor: bg,
-      transition: 'background-color 1.2s ease',
       display: 'flex',
-      alignItems: 'flex-end',
-      justifyContent: 'flex-start',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minHeight: '100vh',
+      gap: '0.8em',
+      textAlign: 'center',
       padding: '2rem',
-      position: 'relative',
-      overflow: 'hidden',
     }}>
       {lines.map((line, i) => (
         <p
