@@ -12,6 +12,7 @@ VAR stress = 30
 === act1_screen1 ===
 # character:none
 # image:Act1
+# sound:Classroom
 The results are out.
 [BREAK]
 -> act1_screen2
@@ -19,6 +20,7 @@ The results are out.
 === act1_screen2 ===
 # character:rahul_teen_neutral
 # image:Act1
+# sound:Classroom
 {player_name}, you are 16.
 Your phone is face-down on the desk.
 You put it there twenty minutes ago and haven't touched it since.
@@ -29,6 +31,7 @@ Everyone around you already knows.
 === act1_choice ===
 # character:rahul_teen_tense
 # image:Act2
+# sound:Classroom
 Rohan got 91. He told you without being asked.
 What do you do?
 
@@ -47,6 +50,7 @@ What do you do?
 === act1_choice_option1 ===
 # character:rahul_teen_tense
 # image:Option1
+# sound:Classroom
 57 out of 100.
 You read it three times.
 [BREAK]

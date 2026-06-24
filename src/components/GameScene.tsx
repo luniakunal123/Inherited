@@ -6,6 +6,7 @@ import Act2 from '../assets/backgrounds/Act2.png'
 import Option1 from '../assets/backgrounds/Aoption1.png'
 import Option2 from '../assets/backgrounds/Aoption2.png'
 import Option3 from '../assets/backgrounds/Aoption3.png'
+import ClassroomSound from '../assets/sounds/Classroom.wav'
 
 const SCENE_IMAGES: Record<string, string> = {
   Act1,
@@ -13,6 +14,10 @@ const SCENE_IMAGES: Record<string, string> = {
   Option1,
   Option2,
   Option3,
+}
+
+const SCENE_SOUNDS: Record<string, string> = {
+  Classroom: ClassroomSound,
 }
 
 const BG_COLOURS: Record<string, string> = {
@@ -38,6 +43,7 @@ export default function GameScene({ playerName }: Props) {
   }, {} as Record<string, string>)
 
   const sceneImage = SCENE_IMAGES[tags['image']] ?? null
+  const sceneSound = SCENE_SOUNDS[tags['sound']] ?? null
   const bg = BG_COLOURS[tags['background']] ?? '#000'
 
   const readingDelay = Math.min(
@@ -47,6 +53,23 @@ export default function GameScene({ playerName }: Props) {
       state.paragraphs.join(' ').length * 25
     )
   )
+
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    if (sceneSound) {
+      if (!audioRef.current || audioRef.current.src !== sceneSound) {
+        audioRef.current?.pause()
+        audioRef.current = new Audio(sceneSound)
+        audioRef.current.loop = true
+        audioRef.current.volume = 0.3
+        audioRef.current.play().catch(() => {})
+      }
+    } else {
+      audioRef.current?.pause()
+      audioRef.current = null
+    }
+  }, [sceneSound])
 
   const [isPortrait, setIsPortrait] = useState(
     window.innerHeight > window.innerWidth
