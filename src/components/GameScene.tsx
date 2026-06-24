@@ -138,6 +138,31 @@ export default function GameScene({ playerName }: Props) {
     return () => clearTimeout(startTimer)
   }, [pendingChanges, readingDelay])
 
+  if (isPortrait) {
+    return (
+      <div
+        style={{
+          height: '100vh',
+          overflow: 'hidden',
+          background: '#000',
+          color: 'rgba(255,255,255,0.85)',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          textAlign: 'center',
+          padding: '2rem',
+        }}
+      >
+        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>↻</div>
+        <p style={{ fontSize: '1.1rem' }}>Please rotate your device.</p>
+        <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>
+          Some stories are wider than they are tall.
+        </p>
+      </div>
+    )
+  }
+
   if (state.isEnded) {
     return <EndScreen />
   }
