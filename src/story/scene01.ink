@@ -224,7 +224,7 @@ A pause that is one beat too long.
 
 === act2_slap2 ===
 # image:Act10
-# sound:silence
+# sound:Slap
 It's fast. 
 You don't see his hand.
 You only feel the heat on your cheek

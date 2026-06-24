@@ -9,6 +9,7 @@ import Option3 from '../assets/backgrounds/Aoption3.png'
 import ClassroomSound from '../assets/sounds/Classroom.wav'
 import KitchenSound from '../assets/sounds/Kitchen.wav'
 import RoomSound from '../assets/sounds/Room.wav'
+import SlapSound from '../assets/sounds/Slap.wav'
 import Act4 from '../assets/backgrounds/Act4.png'
 import Act5 from '../assets/backgrounds/Act5.png'
 import Act6 from '../assets/backgrounds/Act6.png'
@@ -27,6 +28,7 @@ const SCENE_SOUNDS: Record<string, string> = {
   Classroom: ClassroomSound,
   Kitchen: KitchenSound,
   Room: RoomSound,
+  Slap: SlapSound,
 }
 
 const BG_COLOURS: Record<string, string> = {
@@ -43,7 +45,7 @@ const BG_COLOURS: Record<string, string> = {
 function speakPlayerName(playerName: string) {
   const text = playerName
   const utterance = new SpeechSynthesisUtterance(text)
-  utterance.pitch = 0.2  // deeper
+  utterance.pitch = 0.7  // deeper
 utterance.rate = 0.7   // slower, more deliberate
 utterance.volume = 1
   const voices = window.speechSynthesis.getVoices()
@@ -93,8 +95,8 @@ export default function GameScene({ playerName }: Props) {
       if (!audioRef.current || !currentSrc.includes(newSrc.split('/').pop() ?? '')) {
         audioRef.current?.pause()
         audioRef.current = new Audio(sceneSound)
-        audioRef.current.loop = true
-        audioRef.current.volume = 0.3
+        audioRef.current.loop = sceneSound === SlapSound ? false : true
+        audioRef.current.volume = sceneSound === SlapSound ? 0.8 : 0.3
         audioRef.current.play().catch(() => {})
       }
       // Same sound already playing — do nothing, let it continue
@@ -133,7 +135,7 @@ export default function GameScene({ playerName }: Props) {
     hasSpoken.current = speakTag
     const text = speakTag === 'player_name' ? playerName : speakTag
     const utterance = new SpeechSynthesisUtterance(text)
-    utterance.pitch = 0.2
+    utterance.pitch = 0.7
     utterance.rate = 0.7
     utterance.volume = 1
 
