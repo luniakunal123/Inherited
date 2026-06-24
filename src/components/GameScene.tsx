@@ -137,6 +137,9 @@ export default function GameScene({ playerName }: Props) {
       window.speechSynthesis.cancel()
     }
   }, [speakTag, playerName])
+
+  // Transition animation
+  useEffect(() => {
     if (!transitionTag) {
       setTransition('idle')
       return
