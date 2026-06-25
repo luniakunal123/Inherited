@@ -273,10 +273,10 @@ export default function GameScene({ playerName }: Props) {
           setActiveChange(current)
         }
       }, 1200)
-    }, readingDelay)
+    }, 10000)
 
     return () => clearTimeout(startTimer)
-  }, [pendingChanges, readingDelay])
+  }, [pendingChanges])
 
   if (isPortrait) {
     return (
@@ -492,18 +492,18 @@ export default function GameScene({ playerName }: Props) {
         </div>
       )}
 
-      {(tags['character'] === 'papa_tired' || tags['character'] === 'papa_controlled') && (
+{tags['character'] === 'papa_controlled' && (
         <>
           {showStatPanel && (
             <div style={{
-              position: 'fixed', top: '70px', left: '50%',
-              transform: 'translateX(-50%)', background: 'rgba(0,0,0,0.4)',
-              border: '1px solid rgba(255,255,255,0.12)', borderRadius: '12px',
-              padding: '10px 14px', minWidth: '200px', zIndex: 1000,
+              position: 'fixed', top: '130px', right: '16px',
+              background: 'rgba(0,0,0,0.4)',
+              border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px',
+              padding: '6px 8px', width: '120px', zIndex: 1000,
             }}>
               {pendingChanges.map((change, index) => (
                 <div key={change} style={{
-                  padding: '3px 0', fontSize: '0.75rem', fontFamily: 'monospace',
+                  padding: '3px 0', fontSize: '0.65rem', fontFamily: 'monospace',
                   letterSpacing: '0.08em',
                   opacity: index < activeChange ? 0.2 : index === activeChange ? 1 : 0.6,
                   transform: index === activeChange ? 'scale(1.05)' : 'scale(1)',
@@ -603,9 +603,9 @@ function Bars({ composure, energy, stress, hitBar }: { composure: number; energy
 
   return (
     <div style={{
-      position: 'fixed', bottom: '24px', right: '24px', width: '170px',
-      padding: '10px', background: 'rgba(0,0,0,0.4)',
-      border: '1px solid rgba(255,255,255,0.15)', borderRadius: '12px', zIndex: 999,
+      position: 'fixed', top: '16px', right: '16px', width: '120px',
+      padding: '7px 8px', background: 'rgba(0,0,0,0.3)',
+      border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', zIndex: 999,
     }}>
       {stats.map(stat => {
         const isHit = hitBar === stat.label
@@ -615,11 +615,11 @@ function Bars({ composure, energy, stress, hitBar }: { composure: number; energy
             transform: isHit ? 'translateX(-6px) scale(1.06)' : 'translateX(0px) scale(1)',
             transition: 'transform 0.18s cubic-bezier(0.34,1.56,0.64,1)',
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px', fontSize: '0.75rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.65rem' }}>
               <span>{stat.label}</span>
               <span>{stat.value}</span>
             </div>
-            <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '999px', overflow: 'hidden' }}>
+            <div style={{ height: '4px', background: 'rgba(255,255,255,0.08)', borderRadius: '999px', overflow: 'hidden' }}>
               <div style={{
                 width: `${Math.max(0, Math.min(100, stat.value))}%`, height: '100%',
                 background: isHit ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.85)',
