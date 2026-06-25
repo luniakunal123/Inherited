@@ -8,13 +8,21 @@ export default function NameEntry({ onSubmit }: Props) {
   const handleSubmit = () => {
     const name = value.trim() || 'you'
     const capitalized = name.charAt(0).toUpperCase() + name.slice(1)
+
+    // Request fullscreen
+    const el = document.documentElement
+    if (el.requestFullscreen) {
+      el.requestFullscreen().catch(() => {})
+    } else if ((el as any).webkitRequestFullscreen) {
+      (el as any).webkitRequestFullscreen()
+    }
+
     // Unlock speech synthesis on first user gesture
     const utterance = new SpeechSynthesisUtterance('')
     window.speechSynthesis.speak(utterance)
     window.speechSynthesis.cancel()
     onSubmit(capitalized)
   }
-
   return (
     <div style={{
       display: 'flex',
