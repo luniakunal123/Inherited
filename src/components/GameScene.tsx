@@ -150,7 +150,9 @@ export default function GameScene({ playerName }: Props) {
     if (hasShaken.current) return
     hasShaken.current = true
     setScreenShaking(true)
-    if (navigator.vibrate) navigator.vibrate([300])
+    setTimeout(() => {
+      if (navigator.vibrate) navigator.vibrate([300])
+    }, 1000)
     setTimeout(() => setScreenShaking(false), 600)
   }, [tags])
 
