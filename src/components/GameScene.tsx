@@ -26,9 +26,10 @@ import Act201 from '../assets/backgrounds/Act201.png'
 import Act202 from '../assets/backgrounds/Act202.png'
 import Act203 from '../assets/backgrounds/Act203.png'
 import Act204 from '../assets/backgrounds/Act204.png'
+import Act205 from '../assets/backgrounds/Act205.png'
 
 const SCENE_IMAGES: Record<string, string> = {
-  Act1, Act2, Act3, Act4, Act5, Act6, Act7, Act8, Act9, Act10, Act11,Act200,Act201,Act202,Act203,Act204,
+  Act1, Act2, Act3, Act4, Act5, Act6, Act7, Act8, Act9, Act10, Act11,Act200,Act201,Act202,Act203,Act204,Act205,
   Option1, Option2, Option3,
 }
 
@@ -104,10 +105,6 @@ export default function GameScene({ playerName }: Props) {
   const [isPortrait, setIsPortrait] = useState(window.innerHeight > window.innerWidth)
   const [showContinue, setShowContinue] = useState(false)
   const [transition, setTransition] = useState<'idle' | 'fading_in' | 'holding' | 'fading_out'>('idle')
-  const [pendingChanges, setPendingChanges] = useState<string[]>([])
-  const [activeChange, setActiveChange] = useState<number>(-1)
-  const [showStatPanel, setShowStatPanel] = useState(false)
-  const [hitBar, setHitBar] = useState<string | null>(null)
   const [screenShaking, setScreenShaking] = useState(false)
   const [showWish, setShowWish] = useState(false)
   const [lockedTapped, setLockedTapped] = useState(false)
@@ -214,69 +211,17 @@ export default function GameScene({ playerName }: Props) {
       return
     }
     setTransition('fading_in')
+    const holdTime = transitionTag === 'present_day' ? 8000 : 6000
+    const advanceTime = transitionTag === 'present_day' ? 9000 : 7000
     const t1 = setTimeout(() => setTransition('holding'), 1000)
-    const t2 = setTimeout(() => setTransition('fading_out'), 6000)
+    const t2 = setTimeout(() => setTransition('fading_out'), holdTime)
     const t3 = setTimeout(() => {
       setTransition('idle')
       choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
-    }, 7000)
+    }, advanceTime)
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [transitionTag])
 
-  const previousStats = useRef({
-    composure: state.variables.composure ?? 100,
-    energy: state.variables.energy ?? 80,
-    stress: state.variables.stress ?? 30,
-  })
-
-  useEffect(() => {
-    const prev = previousStats.current
-    const composure = state.variables.composure ?? 100
-    const energy = state.variables.energy ?? 80
-    const stress = state.variables.stress ?? 30
-    const notifications: string[] = []
-
-    if (composure !== prev.composure) notifications.push(`COMPOSURE ${composure - prev.composure > 0 ? '+' : ''}${composure - prev.composure}`)
-    if (energy !== prev.energy) notifications.push(`ENERGY ${energy - prev.energy > 0 ? '+' : ''}${energy - prev.energy}`)
-    if (stress !== prev.stress) notifications.push(`STRESS ${stress - prev.stress > 0 ? '+' : ''}${stress - prev.stress}`)
-
-    if (notifications.length > 0) setPendingChanges(notifications)
-    previousStats.current = { composure, energy, stress }
-  }, [state.variables])
-
-  useEffect(() => {
-    if (pendingChanges.length === 0) return
-    let current = 0
-    setActiveChange(-1)
-    setShowStatPanel(false)
-
-    const startTimer = setTimeout(() => {
-      setShowStatPanel(true)
-      setActiveChange(0)
-
-      const interval = setInterval(() => {
-        const change = pendingChanges[current]
-        if (change.includes('COMPOSURE')) setHitBar('Composure')
-        if (change.includes('ENERGY')) setHitBar('Energy')
-        if (change.includes('STRESS')) setHitBar('Stress')
-        setTimeout(() => setHitBar(null), 400)
-        current++
-
-        if (current >= pendingChanges.length) {
-          clearInterval(interval)
-          setTimeout(() => {
-            setPendingChanges([])
-            setActiveChange(-1)
-            setShowStatPanel(false)
-          }, 1200)
-        } else {
-          setActiveChange(current)
-        }
-      }, 1200)
-    }, 10000)
-
-    return () => clearTimeout(startTimer)
-  }, [pendingChanges])
 
   if (isPortrait) {
     return (
@@ -473,6 +418,8 @@ export default function GameScene({ playerName }: Props) {
                 ? 'Three days later.'
                 : transitionTag === 'hold_onto_that'
                 ? <>This hurt you. It was wrong. Hold onto that.<br/>The game will not take it from you.</>
+                : transitionTag === 'present_day'
+                ? 'Present day.'
                 : ''}
             </p>
           )}
@@ -492,33 +439,12 @@ export default function GameScene({ playerName }: Props) {
         </div>
       )}
 
-{tags['character'] === 'papa_controlled' && (
+{tags['character'] === 'papa_controlled' && state.choices.length > 0 && (
         <>
-          {showStatPanel && (
-            <div style={{
-              position: 'fixed', top: '130px', right: '16px',
-              background: 'rgba(0,0,0,0.4)',
-              border: '1px solid rgba(255,255,255,0.12)', borderRadius: '8px',
-              padding: '6px 8px', width: '120px', zIndex: 1000,
-            }}>
-              {pendingChanges.map((change, index) => (
-                <div key={change} style={{
-                  padding: '3px 0', fontSize: '0.65rem', fontFamily: 'monospace',
-                  letterSpacing: '0.08em',
-                  opacity: index < activeChange ? 0.2 : index === activeChange ? 1 : 0.6,
-                  transform: index === activeChange ? 'scale(1.05)' : 'scale(1)',
-                  transition: 'all 0.3s ease',
-                }}>
-                  {change}
-                </div>
-              ))}
-            </div>
-          )}
           <Bars
             composure={state.variables.composure ?? 100}
             energy={state.variables.energy ?? 80}
             stress={state.variables.stress ?? 30}
-            hitBar={hitBar}
           />
         </>
       )}
@@ -594,7 +520,7 @@ function EndScreen() {
   )
 }
 
-function Bars({ composure, energy, stress, hitBar }: { composure: number; energy: number; stress: number; hitBar: string | null }) {
+function Bars({ composure, energy, stress }: { composure: number; energy: number; stress: number }) {
   const stats = [
     { label: 'Composure', value: composure },
     { label: 'Energy', value: energy },
@@ -608,13 +534,8 @@ function Bars({ composure, energy, stress, hitBar }: { composure: number; energy
       border: '1px solid rgba(255,255,255,0.08)', borderRadius: '8px', zIndex: 999,
     }}>
       {stats.map(stat => {
-        const isHit = hitBar === stat.label
         return (
-          <div key={stat.label} style={{
-            marginBottom: '14px',
-            transform: isHit ? 'translateX(-6px) scale(1.06)' : 'translateX(0px) scale(1)',
-            transition: 'transform 0.18s cubic-bezier(0.34,1.56,0.64,1)',
-          }}>
+          <div key={stat.label} style={{ marginBottom: '14px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '0.65rem' }}>
               <span>{stat.label}</span>
               <span>{stat.value}</span>
@@ -622,9 +543,8 @@ function Bars({ composure, energy, stress, hitBar }: { composure: number; energy
             <div style={{ height: '4px', background: 'rgba(255,255,255,0.08)', borderRadius: '999px', overflow: 'hidden' }}>
               <div style={{
                 width: `${Math.max(0, Math.min(100, stat.value))}%`, height: '100%',
-                background: isHit ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.85)',
-                boxShadow: isHit ? '0 0 12px rgba(255,255,255,0.65)' : 'none',
-                transition: 'width 0.9s cubic-bezier(0.22,1,0.36,1), box-shadow 0.25s ease',
+                background: 'rgba(255,255,255,0.85)',
+                transition: 'width 0.9s cubic-bezier(0.22,1,0.36,1)',
               }} />
             </div>
           </div>

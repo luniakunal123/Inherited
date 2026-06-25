@@ -382,7 +382,7 @@ You don't know yet where it's coming from.
 
 === act3_flip_choice ===
 # image:Act204
-# character:papa_controlled
+# character:papa_tired
 # background:living_room_night
 # sound:silence
 64. You say the number.
@@ -396,6 +396,7 @@ and is running the script.
 
 === act3_flip_choice1 ===
 # image:Act204
+# character:papa_controlled
 What do you say to the boy?
 
 * ["Rohan's father called me. At the office."]
@@ -406,12 +407,14 @@ What do you say to the boy?
     The pressure releases.
     Your son's face does the thing you remember your face doing.
     You recognise it and look away.
+    [BREAK]
     -> act3_end
 
 * ["I'm not angry. I'm disappointed."]
     ~ chose_kind_option = false
     Different words.
     The door closes the same way.
+    [BREAK]
     -> act3_end
 
 * [Set the paper down. Say nothing tonight.]
@@ -419,39 +422,49 @@ What do you say to the boy?
     You eat dinner.
     The number sits between you all evening
     like a third person at the table.
+    [BREAK]
     -> act3_end
 
 * [FAINT: "Tell me what happened with this chapter."]
     ~ chose_kind_option = true
     ~ can_call_home = true
-    The words come out wrong.
-    You don't have the shape for this conversation.
-    Nobody ever had it with you.
-    You sit there, both of you,
-    in the clumsy silence
-    of a thing being tried for the first time.
-    It isn't a good conversation.
-    But it's a different one.
-    -> act3_end
+    -> act3_kind_result
+
+=== act3_kind_result ===
+# image:Act204
+# character:papa_tired
+# sound:Room
+The words come out wrong.
+You don't have the shape for this conversation.
+Nobody ever had it with you.
+You sit there, both of you,
+in the clumsy silence
+of a thing being tried for the first time.
+It isn't a good conversation.
+But it's a different one.
+[BREAK]
+-> act3_end
 
 === act3_end ===
 # character:none
-# image:Act204
 # sound:Room
+# transition:present_day
 [BREAK]
 -> act4_return
 
 === act4_return ===
 # character:rahul_teen_neutral
-# background:classroom_day
+# image:Act1
+# sound:Classroom
+Results are out!
 Your phone is face-down on the desk.
-It has been there for twenty-three minutes.
+It has been there for twenty minutes.
 [BREAK]
 -> act4_choice
 
 === act4_choice ===
 # character:rahul_teen_neutral
-# background:classroom_day
+# image:Act1
 What do you do?
 
 * [LOCKED: Call home. Tell them before you see it yourself.]
@@ -473,7 +486,9 @@ What do you do?
 
 === act4_call_home ===
 # character:rahul_teen_neutral
-# background:classroom_day
+# image:Act205
+# sound:Classroom
+
 The phone rings twice.
 Then your mother picks up.
 You say the number before she asks.
