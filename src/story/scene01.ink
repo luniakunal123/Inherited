@@ -236,7 +236,7 @@ What do i tell him?
 === act2_slap ===
 # character:rahul_child_fear
 # image:Act9
-# sound:silence
+# sound:Room
 "What do I tell people."
 He doesn't say it like a question.
 A pause that is one beat too long.
@@ -289,6 +289,16 @@ Because it is what there is.
 # character:none
 # background:black
 # transition:hold_onto_that
+[BREAK]
+-> act3_identity
+
+=== act3_identity ===
+# character:none
+# background:black
+You are not eight anymore.
+You grew up.
+You became something.
+You are not sure it was what you meant to become.
 [BREAK]
 -> act3_screen1
 

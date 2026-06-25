@@ -61,10 +61,11 @@ export default function GameScene({ playerName }: Props) {
   const speakTag = tags['speak'] ?? null
   const isWishScene = tags['wish'] === 'true'
 
-  const readingDelay = Math.min(
-    7000,
-    Math.max(2500, state.paragraphs.join(' ').length * 25)
-  )
+  const isIdentityScene = state.paragraphs.join(' ').includes('You are not sure it was what you meant to become')
+
+  const readingDelay = isIdentityScene
+    ? 5000
+    : Math.min(7000, Math.max(2500, state.paragraphs.join(' ').length * 25))
 
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -114,9 +115,16 @@ export default function GameScene({ playerName }: Props) {
     return () => clearTimeout(timer)
   }, [state.paragraphs])
 
-  // Speech synthesis
+  // Speech synthesis — automatic on scene load
+  const spokenFor = useRef<string | null>(null)
   useEffect(() => {
-    if (!speakTag) return
+    if (!speakTag) {
+      spokenFor.current = null
+      return
+    }
+    if (spokenFor.current === speakTag) return
+    spokenFor.current = speakTag
+
     const text = speakTag === 'player_name' ? playerName : speakTag
     const utterance = new SpeechSynthesisUtterance(text)
     utterance.volume = 1
@@ -137,8 +145,6 @@ export default function GameScene({ playerName }: Props) {
     } else {
       loadVoices()
     }
-
-    return () => { window.speechSynthesis.cancel() }
   }, [speakTag, playerName])
 
   // Wish scene — fade in then auto advance
@@ -263,7 +269,6 @@ export default function GameScene({ playerName }: Props) {
 
   if (state.isEnded) return <EndScreen />
 
-  // Wish scene — completely separate full screen render
   if (isWishScene) {
     return (
       <div style={{

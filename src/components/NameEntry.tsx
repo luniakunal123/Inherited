@@ -18,9 +18,9 @@ export default function NameEntry({ onSubmit }: Props) {
     }
 
     // Unlock speech synthesis on first user gesture
-    const utterance = new SpeechSynthesisUtterance('')
-    window.speechSynthesis.speak(utterance)
-    window.speechSynthesis.cancel()
+    const warmup = new SpeechSynthesisUtterance(' ')
+    warmup.volume = 0
+    window.speechSynthesis.speak(warmup)
     onSubmit(capitalized)
   }
   return (
