@@ -96,6 +96,8 @@ export default function GameScene({ playerName }: Props) {
   const [activeChange, setActiveChange] = useState<number>(-1)
   const [showStatPanel, setShowStatPanel] = useState(false)
   const [hitBar, setHitBar] = useState<string | null>(null)
+  const [screenShaking, setScreenShaking] = useState(false)
+  const [flashWhite, setFlashWhite] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -137,6 +139,16 @@ export default function GameScene({ playerName }: Props) {
       window.speechSynthesis.cancel()
     }
   }, [speakTag, playerName])
+
+  // Screen shake on slap
+  useEffect(() => {
+    if (tags['sound'] !== 'Slap') return
+    setScreenShaking(true)
+    setFlashWhite(true)
+    if (navigator.vibrate) navigator.vibrate([300])
+    setTimeout(() => setScreenShaking(false), 600)
+    setTimeout(() => setFlashWhite(false), 400)
+  }, [tags])
 
   // Transition animation
   useEffect(() => {
@@ -236,8 +248,21 @@ export default function GameScene({ playerName }: Props) {
       alignItems: 'flex-end',
       justifyContent: 'center',
       paddingBottom: '1rem',
+      animation: screenShaking ? 'screenShake 0.6s ease' : 'none',
     }}>
 
+{/* White flash on slap */}
+{flashWhite && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: '#fff',
+          zIndex: 999,
+          pointerEvents: 'none',
+          animation: 'flashWhite 0.4s ease forwards',
+        }} />
+      )}
+      
       {sceneImage && (
         <div style={{
           position: 'absolute', inset: 0,
