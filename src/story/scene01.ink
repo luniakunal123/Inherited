@@ -87,6 +87,15 @@ The classroom is loud around you.
 Nobody knows yet.
 Soon everyone will.
 [BREAK]
+-> act1_reflection2
+
+=== act1_reflection2 ===
+# character:rahul_teen_tense
+# image:Act3
+# sound:Classroom
+# wish:true
+I wish I could call home.
+[BREAK]
 -> act1_end
 
 === act1_end ===

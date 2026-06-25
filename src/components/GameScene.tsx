@@ -59,6 +59,7 @@ export default function GameScene({ playerName }: Props) {
   const bg = BG_COLOURS[tags['background']] ?? '#000'
   const transitionTag = tags['transition'] ?? null
   const speakTag = tags['speak'] ?? null
+  const wishTag = tags['wish'] ?? null
 
   const readingDelay = Math.min(
     7000,
@@ -97,6 +98,8 @@ export default function GameScene({ playerName }: Props) {
   const [showStatPanel, setShowStatPanel] = useState(false)
   const [hitBar, setHitBar] = useState<string | null>(null)
   const [screenShaking, setScreenShaking] = useState(false)
+  const [showWish, setShowWish] = useState(false)
+  const [lockedTapped, setLockedTapped] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -106,6 +109,7 @@ export default function GameScene({ playerName }: Props) {
 
   useEffect(() => {
     setShowContinue(false)
+    setLockedTapped(false)
     const timer = setTimeout(() => setShowContinue(true), readingDelay)
     return () => clearTimeout(timer)
   }, [state.paragraphs])
@@ -138,6 +142,25 @@ export default function GameScene({ playerName }: Props) {
       window.speechSynthesis.cancel()
     }
   }, [speakTag, playerName])
+  const wishFired = useRef(false)
+
+  // Delayed wish line + auto advance
+  useEffect(() => {
+    if (!wishTag) {
+      setShowWish(false)
+      wishFired.current = false
+      return
+    }
+    if (wishFired.current) return
+    wishFired.current = true
+    setShowWish(false)
+    const t1 = setTimeout(() => setShowWish(true), 1500)
+    const t2 = setTimeout(() => {
+      wishFired.current = false
+      choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
+    }, 5000)
+    return () => { clearTimeout(t1); clearTimeout(t2) }
+  }, [state.paragraphs])
 
   const hasShaken = useRef(false)
 
@@ -152,7 +175,7 @@ export default function GameScene({ playerName }: Props) {
     setScreenShaking(true)
     setTimeout(() => {
       if (navigator.vibrate) navigator.vibrate([300])
-    }, 1000)
+    }, 1200)
     setTimeout(() => setScreenShaking(false), 600)
   }, [tags])
 
@@ -274,19 +297,53 @@ export default function GameScene({ playerName }: Props) {
         }} />
       )}
 
-      <div style={{
+<div style={{
         position: 'relative', zIndex: 2, width: '92%',
-        background: 'rgba(0,0,0,0.25)', borderRadius: '8px',
+        background: wishTag ? 'transparent' : 'rgba(0,0,0,0.25)',
+        borderRadius: '8px',
         padding: '0.8rem 1rem', border: 'none',
       }}>
-        {state.paragraphs.map((p, i) => (
-          <p key={i} style={{ fontSize: '0.85rem', lineHeight: 1.6, margin: 0, marginBottom: '0.5em' }}>{p}</p>
-        ))}
+        {state.paragraphs.map((p, i) => {
+          const isWishLine = wishTag && p.includes('I wish I could call home')
+          if (isWishLine) return (
+            <p key={i} style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              fontSize: '1.8rem',
+              fontStyle: 'italic',
+              color: 'rgba(212,207,200,0.55)',
+              opacity: showWish ? 1 : 0,
+              transition: 'opacity 1.2s ease',
+              textAlign: 'center',
+              letterSpacing: '0.04em',
+              zIndex: 50,
+              pointerEvents: 'none',
+              margin: 0,
+              width: '80%',
+            }}>{p}</p>
+          )
+          return (
+            <p key={i} style={{
+              fontSize: '0.85rem',
+              lineHeight: 1.6,
+              margin: 0,
+              marginBottom: '0.5em',
+            }}>{p}</p>
+          )
+        })}
 
         {state.choices.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.7rem' }}>
             {state.choices.map(choice => (
-              <ChoiceButton key={choice.index} choice={choice} onChoose={choose} />
+              <ChoiceButton
+                key={choice.index}
+                choice={choice}
+                onChoose={choose}
+                lockedTapped={lockedTapped}
+                onLockedTap={() => setLockedTapped(true)}
+              />
             ))}
           </div>
         )}
@@ -387,34 +444,42 @@ export default function GameScene({ playerName }: Props) {
   )
 }
 
-function ChoiceButton({ choice, onChoose }: { choice: InkChoice; onChoose: (c: InkChoice) => void }) {
+function ChoiceButton({ choice, onChoose, lockedTapped, onLockedTap }: {
+  choice: InkChoice
+  onChoose: (c: InkChoice) => void
+  lockedTapped?: boolean
+  onLockedTap?: () => void
+}) {
   const isLocked = choice.isLocked
+  const showAsLocked = isLocked && lockedTapped
   const [shaking, setShaking] = useState(false)
 
   const handleClick = () => {
     if (isLocked) {
       setShaking(true)
       setTimeout(() => setShaking(false), 500)
+      if (onLockedTap) onLockedTap()
     }
     onChoose(choice)
   }
 
   return (
     <button onClick={handleClick} style={{
-      background: isLocked ? 'rgba(180,140,80,0.06)' : 'transparent',
-      border: isLocked
+      background: showAsLocked ? 'rgba(180,140,80,0.06)' : 'transparent',
+      border: showAsLocked
         ? '1px dashed rgba(212,207,200,0.25)'
         : choice.isFaint ? '1px solid rgba(139,157,195,0.5)' : '1px solid rgba(212,207,200,0.5)',
-      color: isLocked ? 'rgba(212,207,200,0.45)' : choice.isFaint ? 'rgba(139,157,195,0.85)' : 'rgba(255,255,255,1)',
+      color: showAsLocked ? 'rgba(212,207,200,0.45)' : choice.isFaint ? 'rgba(139,157,195,0.85)' : 'rgba(255,255,255,1)',
       cursor: 'pointer', fontFamily: 'inherit',
-      fontSize: isLocked ? '0.78rem' : choice.isFaint ? '0.82rem' : '0.88rem',
-      fontStyle: isLocked ? 'italic' : choice.isFaint ? 'italic' : 'normal',
+      fontSize: showAsLocked ? '0.78rem' : choice.isFaint ? '0.82rem' : '0.88rem',
+      fontStyle: showAsLocked ? 'italic' : choice.isFaint ? 'italic' : 'normal',
       lineHeight: 1.2, padding: '0.18rem 0.7rem', textAlign: 'left',
       width: '100%', textDecoration: 'none',
-      letterSpacing: isLocked ? '0.02em' : 'normal',
+      letterSpacing: showAsLocked ? '0.02em' : 'normal',
       animation: shaking ? 'shake 0.5s ease' : 'none',
+      transition: 'all 0.3s ease',
     }}>
-      {isLocked ? '🔒 ' : ''}{choice.text}
+      {showAsLocked ? '🔒 ' : ''}{choice.text}
     </button>
   )
 }
