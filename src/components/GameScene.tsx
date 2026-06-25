@@ -113,7 +113,7 @@ export default function GameScene({ playerName }: Props) {
     if (!speakTag) return
     const text = speakTag === 'player_name' ? playerName : speakTag
     const utterance = new SpeechSynthesisUtterance(text)
-    utterance.pitch = 0.5
+    utterance.pitch = 0.65
     utterance.rate = 0.7
     utterance.volume = 1
 
