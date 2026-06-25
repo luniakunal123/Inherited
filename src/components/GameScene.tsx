@@ -9,6 +9,7 @@ import Option2 from '../assets/backgrounds/Aoption2.png'
 import Option3 from '../assets/backgrounds/Aoption3.png'
 import ClassroomSound from '../assets/sounds/Classroom.wav'
 import KitchenSound from '../assets/sounds/Kitchen.wav'
+import Beta from '../assets/sounds/Beta.wav'
 import RoomSound from '../assets/sounds/Room.wav'
 import SlapSound from '../assets/sounds/Slap.wav'
 import Office from '../assets/sounds/Office.wav'
@@ -40,6 +41,7 @@ const SCENE_SOUNDS: Record<string, string> = {
   Slap: SlapSound,
   Traffic: Traffic,
   Office: Office,
+  Beta: Beta
 }
 
 const BG_COLOURS: Record<string, string> = {
@@ -92,9 +94,17 @@ export default function GameScene({ playerName }: Props) {
       if (!audioRef.current || !currentSrc.includes(newSrc.split('/').pop() ?? '')) {
         audioRef.current?.pause()
         audioRef.current = new Audio(sceneSound)
-        audioRef.current.loop = sceneSound === SlapSound ? false : true
+        audioRef.current.loop =
+  sceneSound !== SlapSound &&
+  sceneSound !== Beta
         audioRef.current.volume = sceneSound === SlapSound ? 0.8 : 0.3
-        audioRef.current.play().catch(() => {})
+        if (sceneSound === Beta) {
+          setTimeout(() => {
+            audioRef.current?.play().catch(() => {})
+          }, 3000) // 3 second delay
+        } else {
+          audioRef.current.play().catch(() => {})
+        }
       }
     } else {
       audioRef.current?.pause()

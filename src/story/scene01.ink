@@ -163,11 +163,9 @@ She just looks at you.
 === act2_papa_calls ===
 # character:rahul_child_tense
 # image:Act6
-# sound:silence
-# speak:player_name
+# sound:Beta
 Papa's voice comes from the other room.
-"{player_name}."
-Just your name. Nothing else.
+"Beta. Come here"
 "You've learned to read the way he says things."
 Tonight it means: I already know. Come here.
 [BREAK]
