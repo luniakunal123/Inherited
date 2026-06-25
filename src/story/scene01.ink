@@ -311,22 +311,34 @@ You are not {player_name} anymore.
 
 === act3_screen2 ===
 # character:papa_tired
-# background:living_room_night
+# image:Act200
+# sound:Room
+
 You are Papa.
 You are 44 years old.
 You have been tired for eleven years.
 You came home early today because your father called.
 At the office.
+[BREAK]
+-> act3_screen3
+
+=== act3_screen3 ===
+# image:Act200
+# sound:Room
 He wanted to know how the boy was doing in school.
-He said: "Our name means something in this town."
+He said, "Our name means something in this town."
 He said it the way he always says things.
 Like a door closing.
+
 [BREAK]
 -> act3_depletion1
 
 === act3_depletion1 ===
+# image:Act201
 # character:papa_tired
 # background:office_corridor
+# sound:Office
+
 Before you left the office —
 your supervisor stopped you in the corridor.
 The quarterly numbers are short.
@@ -338,8 +350,11 @@ He didn't have to.
 -> act3_depletion2
 
 === act3_depletion2 ===
+# image:Act202
 # character:papa_tired
 # background:home_entrance_evening
+# sound:Traffic
+
 Before you came home —
 the landlord's message was on your phone.
 Deposit increase. From next month.
@@ -351,8 +366,11 @@ You didn't reply.
 -> act3_depletion3
 
 === act3_depletion3 ===
+# image:Act203
 # character:papa_tired
 # background:home_entrance_evening
+# sound:Room
+
 Your wife says the school fee is due Thursday.
 She says it quietly, knowing the timing.
 You nod.
@@ -363,16 +381,22 @@ You don't know yet where it's coming from.
 -> act3_flip_choice
 
 === act3_flip_choice ===
+# image:Act204
 # character:papa_controlled
 # background:living_room_night
-64.
-You say the number.
+# sound:silence
+64. You say the number.
 Then you hear yourself say:
 "Rohan's father called me today."
 You hear it like it's coming from another room.
 Like your mouth learned this from somewhere
-and is running the script
-while you watch from slightly behind your own eyes.
+and is running the script.
+[BREAK]
+-> act3_flip_choice1
+
+=== act3_flip_choice1 ===
+# image:Act204
+What do you say to the boy?
 
 * ["Rohan's father called me. At the office."]
     ~ chose_kind_option = false
@@ -412,7 +436,8 @@ while you watch from slightly behind your own eyes.
 
 === act3_end ===
 # character:none
-# background:fade_grey
+# image:Act204
+# sound:Room
 [BREAK]
 -> act4_return
 

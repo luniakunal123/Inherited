@@ -11,6 +11,8 @@ import ClassroomSound from '../assets/sounds/Classroom.wav'
 import KitchenSound from '../assets/sounds/Kitchen.wav'
 import RoomSound from '../assets/sounds/Room.wav'
 import SlapSound from '../assets/sounds/Slap.wav'
+import Office from '../assets/sounds/Office.wav'
+import Traffic from '../assets/sounds/Traffic.wav'
 import Act4 from '../assets/backgrounds/Act4.png'
 import Act5 from '../assets/backgrounds/Act5.png'
 import Act6 from '../assets/backgrounds/Act6.png'
@@ -19,9 +21,14 @@ import Act8 from '../assets/backgrounds/Act8.png'
 import Act9 from '../assets/backgrounds/Act9.png'
 import Act10 from '../assets/backgrounds/Act10.png'
 import Act11 from '../assets/backgrounds/Act11.png'
+import Act200 from '../assets/backgrounds/Act200.png'
+import Act201 from '../assets/backgrounds/Act201.png'
+import Act202 from '../assets/backgrounds/Act202.png'
+import Act203 from '../assets/backgrounds/Act203.png'
+import Act204 from '../assets/backgrounds/Act204.png'
 
 const SCENE_IMAGES: Record<string, string> = {
-  Act1, Act2, Act3, Act4, Act5, Act6, Act7, Act8, Act9, Act10, Act11,
+  Act1, Act2, Act3, Act4, Act5, Act6, Act7, Act8, Act9, Act10, Act11,Act200,Act201,Act202,Act203,Act204,
   Option1, Option2, Option3,
 }
 
@@ -30,6 +37,8 @@ const SCENE_SOUNDS: Record<string, string> = {
   Kitchen: KitchenSound,
   Room: RoomSound,
   Slap: SlapSound,
+  Traffic: Traffic,
+  Office: Office,
 }
 
 const BG_COLOURS: Record<string, string> = {
@@ -62,8 +71,9 @@ export default function GameScene({ playerName }: Props) {
   const isWishScene = tags['wish'] === 'true'
 
   const isIdentityScene = state.paragraphs.join(' ').includes('You are not sure it was what you meant to become')
+  const isFlipScene = state.paragraphs.join(' ').includes('You are not') && state.paragraphs.join(' ').includes('anymore') && !isIdentityScene
 
-  const readingDelay = isIdentityScene
+  const readingDelay = (isIdentityScene || isFlipScene)
     ? 5000
     : Math.min(7000, Math.max(2500, state.paragraphs.join(' ').length * 25))
 
@@ -146,6 +156,21 @@ export default function GameScene({ playerName }: Props) {
       loadVoices()
     }
   }, [speakTag, playerName])
+
+  // Flip scene — auto advance after 4 seconds
+  const flipAdvanced = useRef(false)
+  useEffect(() => {
+    if (!isFlipScene) {
+      flipAdvanced.current = false
+      return
+    }
+    if (flipAdvanced.current) return
+    flipAdvanced.current = true
+    const t = setTimeout(() => {
+      choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
+    }, 4000)
+    return () => clearTimeout(t)
+  }, [isFlipScene])
 
   // Wish scene — fade in then auto advance
   const wishAdvanced = useRef(false)
@@ -268,6 +293,37 @@ export default function GameScene({ playerName }: Props) {
   }
 
   if (state.isEnded) return <EndScreen />
+
+  if (isFlipScene) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: bg,
+        position: 'relative',
+        overflow: 'hidden',
+        transition: 'background-color 1.2s ease',
+      }}>
+        {state.paragraphs.map((p, i) => (
+          <p key={i} style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            fontSize: '1.6rem',
+            color: 'rgba(212,207,200,0.85)',
+            textAlign: 'center',
+            letterSpacing: '0.03em',
+            margin: 0,
+            width: '85%',
+            lineHeight: 1.6,
+            animation: 'fadeIn 2s ease forwards',
+          }}>{p}</p>
+        ))}
+
+       
+      </div>
+    )
+  }
 
   if (isWishScene) {
     return (
