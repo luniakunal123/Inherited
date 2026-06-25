@@ -56,7 +56,7 @@ What do you do?
 57 out of 100.
 You read it three times.
 [BREAK]
--> act1_end
+-> act1_reflection
 
 === act1_choice_option2 ===
 # character:rahul_teen_tense
@@ -66,7 +66,7 @@ Rohan reads it for you.
 He says the number with a kind face.
 That somehow makes it worse.
 [BREAK]
--> act1_end
+-> act1_reflection
 
 === act1_choice_option3 ===
 # character:rahul_teen_tense
@@ -74,6 +74,18 @@ That somehow makes it worse.
 It will still be the same number at home.
 You know this.
 You put the phone in your bag anyway.
+[BREAK]
+-> act1_reflection
+
+=== act1_reflection ===
+# character:rahul_teen_tense
+# image:Act3
+# sound:Classroom
+You put the phone back in your bag.
+Your hand stays there for a moment longer than it needs to.
+The classroom is loud around you.
+Nobody knows yet.
+Soon everyone will.
 [BREAK]
 -> act1_end
 
