@@ -59,7 +59,7 @@ export default function GameScene({ playerName }: Props) {
   const bg = BG_COLOURS[tags['background']] ?? '#000'
   const transitionTag = tags['transition'] ?? null
   const speakTag = tags['speak'] ?? null
-  const wishTag = tags['wish'] ?? null
+  const isWishScene = tags['wish'] === 'true'
 
   const readingDelay = Math.min(
     7000,
@@ -114,7 +114,7 @@ export default function GameScene({ playerName }: Props) {
     return () => clearTimeout(timer)
   }, [state.paragraphs])
 
-  // Speech synthesis — automatic on scene load
+  // Speech synthesis
   useEffect(() => {
     if (!speakTag) return
     const text = speakTag === 'player_name' ? playerName : speakTag
@@ -138,29 +138,26 @@ export default function GameScene({ playerName }: Props) {
       loadVoices()
     }
 
-    return () => {
-      window.speechSynthesis.cancel()
-    }
+    return () => { window.speechSynthesis.cancel() }
   }, [speakTag, playerName])
-  const wishFired = useRef(false)
 
-  // Delayed wish line + auto advance
+  // Wish scene — fade in then auto advance
+  const wishAdvanced = useRef(false)
   useEffect(() => {
-    if (!wishTag) {
+    if (!isWishScene) {
       setShowWish(false)
-      wishFired.current = false
+      wishAdvanced.current = false
       return
     }
-    if (wishFired.current) return
-    wishFired.current = true
+    if (wishAdvanced.current) return
+    wishAdvanced.current = true
     setShowWish(false)
     const t1 = setTimeout(() => setShowWish(true), 1500)
     const t2 = setTimeout(() => {
-      wishFired.current = false
       choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
     }, 5000)
     return () => { clearTimeout(t1); clearTimeout(t2) }
-  }, [state.paragraphs])
+  }, [isWishScene])
 
   const hasShaken = useRef(false)
 
@@ -266,6 +263,53 @@ export default function GameScene({ playerName }: Props) {
 
   if (state.isEnded) return <EndScreen />
 
+  // Wish scene — completely separate full screen render
+  if (isWishScene) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: bg,
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        {sceneImage && (
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundImage: `url(${sceneImage})`,
+            backgroundSize: 'cover', backgroundPosition: 'center',
+            opacity: 0.6, zIndex: 0,
+          }} />
+        )}
+        {sceneImage && (
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 100%)',
+            zIndex: 1,
+          }} />
+        )}
+        <p style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          fontSize: '1.8rem',
+          fontStyle: 'italic',
+          color: 'rgba(212,207,200,0.55)',
+          opacity: showWish ? 1 : 0,
+          transition: 'opacity 1.2s ease',
+          textAlign: 'center',
+          letterSpacing: '0.04em',
+          zIndex: 2,
+          margin: 0,
+          width: '80%',
+          lineHeight: 1.6,
+        }}>
+          I wish I could call home.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -297,42 +341,19 @@ export default function GameScene({ playerName }: Props) {
         }} />
       )}
 
-<div style={{
+      <div style={{
         position: 'relative', zIndex: 2, width: '92%',
-        background: wishTag ? 'transparent' : 'rgba(0,0,0,0.25)',
-        borderRadius: '8px',
+        background: 'rgba(0,0,0,0.25)', borderRadius: '8px',
         padding: '0.8rem 1rem', border: 'none',
       }}>
-        {state.paragraphs.map((p, i) => {
-          const isWishLine = wishTag && p.includes('I wish I could call home')
-          if (isWishLine) return (
-            <p key={i} style={{
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              fontSize: '1.8rem',
-              fontStyle: 'italic',
-              color: 'rgba(212,207,200,0.55)',
-              opacity: showWish ? 1 : 0,
-              transition: 'opacity 1.2s ease',
-              textAlign: 'center',
-              letterSpacing: '0.04em',
-              zIndex: 50,
-              pointerEvents: 'none',
-              margin: 0,
-              width: '80%',
-            }}>{p}</p>
-          )
-          return (
-            <p key={i} style={{
-              fontSize: '0.85rem',
-              lineHeight: 1.6,
-              margin: 0,
-              marginBottom: '0.5em',
-            }}>{p}</p>
-          )
-        })}
+        {state.paragraphs.map((p, i) => (
+          <p key={i} style={{
+            fontSize: '0.85rem',
+            lineHeight: 1.6,
+            margin: 0,
+            marginBottom: '0.5em',
+          }}>{p}</p>
+        ))}
 
         {state.choices.length > 0 && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.7rem' }}>
@@ -399,8 +420,8 @@ export default function GameScene({ playerName }: Props) {
 
       {lockMessage && (
         <div style={{
-          position: 'fixed', top: '50%', left: '50%',
-          transform: 'translate(-50%, -50%)', zIndex: 100,
+          position: 'fixed', top: '8%', left: '50%',
+          transform: 'translateX(-50%)', zIndex: 100,
           color: 'rgba(212,207,200,0.85)', fontSize: '0.9rem', fontStyle: 'italic',
           textAlign: 'center', padding: '1rem 2rem', background: 'rgba(0,0,0,0.55)',
           borderRadius: '8px', border: '1px solid rgba(255,255,255,0.08)',
