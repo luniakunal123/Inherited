@@ -119,9 +119,10 @@ export default function GameScene({ playerName }: Props) {
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices()
       const preferred =
-        voices.find(v => v.name.includes('मधुर')) ??
-        voices.find(v => v.lang === 'hi-IN') ??
-        voices[0]
+                voices.find(v => v.name.includes('Prabhat Indic')) ??
+                voices.find(v => v.name.includes('मधुर')) ??
+                voices.find(v => v.lang === 'hi-IN') ??
+                voices[0]
       if (preferred) utterance.voice = preferred
       window.speechSynthesis.speak(utterance)
     }
