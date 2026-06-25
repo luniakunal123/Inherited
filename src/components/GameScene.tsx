@@ -97,7 +97,6 @@ export default function GameScene({ playerName }: Props) {
   const [showStatPanel, setShowStatPanel] = useState(false)
   const [hitBar, setHitBar] = useState<string | null>(null)
   const [screenShaking, setScreenShaking] = useState(false)
-  const [flashWhite, setFlashWhite] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -121,10 +120,10 @@ export default function GameScene({ playerName }: Props) {
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices()
       const preferred =
-                voices.find(v => v.name.includes('अर्जुन')) ??
-                voices.find(v => v.name.includes('मधुर')) ??
-                voices.find(v => v.lang === 'hi-IN') ??
-                voices[0]
+        voices.find(v => v.name.includes('अर्जुन')) ??
+        voices.find(v => v.name.includes('मधुर')) ??
+        voices.find(v => v.lang === 'hi-IN') ??
+        voices[0]
       if (preferred) utterance.voice = preferred
       window.speechSynthesis.speak(utterance)
     }
@@ -140,14 +139,19 @@ export default function GameScene({ playerName }: Props) {
     }
   }, [speakTag, playerName])
 
-  // Screen shake on slap
+  const hasShaken = useRef(false)
+
+  // Screen shake + vibration on slap
   useEffect(() => {
-    if (tags['sound'] !== 'Slap') return
+    if (tags['sound'] !== 'Slap') {
+      hasShaken.current = false
+      return
+    }
+    if (hasShaken.current) return
+    hasShaken.current = true
     setScreenShaking(true)
-    setFlashWhite(true)
     if (navigator.vibrate) navigator.vibrate([300])
     setTimeout(() => setScreenShaking(false), 600)
-    setTimeout(() => setFlashWhite(false), 400)
   }, [tags])
 
   // Transition animation
@@ -251,18 +255,6 @@ export default function GameScene({ playerName }: Props) {
       animation: screenShaking ? 'screenShake 0.6s ease' : 'none',
     }}>
 
-{/* White flash on slap */}
-{flashWhite && (
-        <div style={{
-          position: 'fixed',
-          inset: 0,
-          background: '#fff',
-          zIndex: 999,
-          pointerEvents: 'none',
-          animation: 'flashWhite 0.4s ease forwards',
-        }} />
-      )}
-      
       {sceneImage && (
         <div style={{
           position: 'absolute', inset: 0,
@@ -299,9 +291,9 @@ export default function GameScene({ playerName }: Props) {
 
         {state.choices.length === 0 && showContinue && !transitionTag && (
           <button
-          onClick={() => {
-            choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
-          }}
+            onClick={() => {
+              choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
+            }}
             style={{
               background: 'transparent', border: 'none',
               color: 'rgba(212,207,200,0.5)', cursor: 'pointer',
