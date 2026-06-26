@@ -377,8 +377,8 @@ export default function GameScene({ playerName }: Props) {
           src={boardDrawing}
           style={{
             position: "absolute",
-            top: "8%", left: "50%",
-          width: "32%", height: "40%",
+            top: "12%", left: "48%",
+          width: "38%", height: "52%",
           objectFit: "fill",
           opacity: 0.88,
           zIndex: 3,
@@ -391,24 +391,8 @@ export default function GameScene({ playerName }: Props) {
 
       {/* ✦ Blackboard interaction hint — classroom scenes only */}
       {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showChalkboard && (
-        <span
-          onClick={() => setShowChalkboard(true)}
-          style={{
-            position: "absolute",
-            top: "32%", left: "68%",
-            zIndex: 6,
-            cursor: "pointer",
-            color: "rgba(235,232,210,1)",
-            fontSize: "0.75rem",
-            userSelect: "none",
-            animation: "starGlow 1.4s ease-in-out infinite",
-            textShadow: "0 0 8px rgba(235,232,210,1), 0 0 16px rgba(235,232,210,0.6)",
-          }}
-        >
-          ✦
-        </span>
+        <StarHint onClick={() => setShowChalkboard(true)} />
       )}
-
 {showChalkboard && (
         <Chalkboard
           onClose={(dataUrl) => {
@@ -588,6 +572,46 @@ function EndScreen() {
         <p key={i} style={{ fontSize: '1rem', opacity: visible > i ? 1 : 0, transition: 'opacity 0.8s ease', margin: 0 }}>{line}</p>
       ))}
     </div>
+  )
+}
+
+function StarHint({ onClick }: { onClick: () => void }) {
+  const [opacity, setOpacity] = useState(0)
+
+  useEffect(() => {
+    let rising = true
+    let val = 0
+    const interval = setInterval(() => {
+      if (rising) {
+        val = Math.min(1, val + 0.08)
+        if (val >= 1) rising = false
+      } else {
+        val = Math.max(0, val - 0.08)
+        if (val <= 0) rising = true
+      }
+      setOpacity(val)
+    }, 50)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <span
+      onClick={onClick}
+      style={{
+        position: "absolute",
+        top: "22%", left: "64%",
+        zIndex: 6,
+        cursor: "pointer",
+        color: "rgba(235,232,210,1)",
+        fontSize: "1rem",
+        userSelect: "none",
+        opacity,
+        transition: "opacity 0.15s ease",
+        textShadow: "0 0 8px rgba(235,232,210,1), 0 0 16px rgba(235,232,210,0.6)",
+      }}
+    >
+      ✦
+    </span>
   )
 }
 
