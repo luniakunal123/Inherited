@@ -391,22 +391,22 @@ export default function GameScene({ playerName }: Props) {
 
       {/* ✦ Blackboard interaction hint — classroom scenes only */}
       {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showChalkboard && (
-        <div
+        <span
           onClick={() => setShowChalkboard(true)}
           style={{
             position: "absolute",
             top: "32%", left: "68%",
             zIndex: 6,
             cursor: "pointer",
-            color: "rgba(235,232,210,0.55)",
-            fontSize: "1.1rem",
+            color: "rgba(235,232,210,1)",
+            fontSize: "0.75rem",
             userSelect: "none",
-            animation: "starPulse 2.8s ease-in-out infinite",
-            textShadow: "0 0 8px rgba(235,232,210,0.3)",
+            animation: "starGlow 1.4s ease-in-out infinite",
+            textShadow: "0 0 8px rgba(235,232,210,1), 0 0 16px rgba(235,232,210,0.6)",
           }}
         >
           ✦
-        </div>
+        </span>
       )}
 
 {showChalkboard && (

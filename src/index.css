@@ -141,7 +141,15 @@ code {
   100% { opacity: 0; }
 }
 
-@keyframes starPulse {
-  0%, 100% { opacity: 0.35; transform: scale(1); }
-  50%       { opacity: 0.75; transform: scale(1.15); }
+@keyframes starBlink {
+  0%   { opacity: 0.05; transform: scale(0.8);  }
+  30%  { opacity: 1;    transform: scale(1.4);  }
+  50%  { opacity: 0.1;  transform: scale(0.85); }
+  70%  { opacity: 0.95; transform: scale(1.3);  }
+  100% { opacity: 0.05; transform: scale(0.8);  }
+}
+
+@keyframes starGlow {
+  0%, 100% { opacity: 0.1; }
+  50%       { opacity: 1;   }
 }
