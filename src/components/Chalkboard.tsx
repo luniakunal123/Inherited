@@ -29,36 +29,7 @@ export default function Chalkboard({ onClose }: ChalkboardProps) {
     canvas.width = Math.round(window.innerWidth * 0.95)
     canvas.height = Math.round(window.innerHeight * 0.82)
 
-    // Base board colour
-    ctx.fillStyle = BOARD_COLOR
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-
-    // Chalk dust noise — worn texture
-    for (let i = 0; i < 6000; i++) {
-      const x = Math.random() * canvas.width
-      const y = Math.random() * canvas.height
-      ctx.fillStyle = `rgba(200,212,196,${Math.random() * 0.02})`
-      ctx.fillRect(x, y, 1, 1)
-    }
-
-    // Faint wipe streaks
-    ctx.strokeStyle = "rgba(200,212,196,0.022)"
-    ctx.lineWidth = 12
-    for (let i = 0; i < 10; i++) {
-      const x = Math.random() * canvas.width
-      ctx.beginPath()
-      ctx.moveTo(x, 0)
-      ctx.lineTo(x + (Math.random() - 0.5) * 30, canvas.height)
-      ctx.stroke()
-    }
-
-    // Load saved drawing
-    const saved = localStorage.getItem(STORAGE_KEY)
-    if (saved) {
-      const img = new Image()
-      img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-      img.src = saved
-    }
+    // Transparent canvas — only chalk strokes are saved, no background
   }, [])
 
   const getPos = (e: React.MouseEvent | React.TouchEvent, canvas: HTMLCanvasElement) => {
@@ -94,30 +65,32 @@ export default function Chalkboard({ onClose }: ChalkboardProps) {
       ctx.globalAlpha = 1
       ctx.lineWidth = 32
       ctx.lineCap = "round"
-      ctx.strokeStyle = BOARD_COLOR
+      ctx.globalCompositeOperation = "destination-out"
+      ctx.strokeStyle = "rgba(0,0,0,1)"
       ctx.beginPath()
       ctx.moveTo(last.x, last.y)
       ctx.lineTo(pos.x, pos.y)
       ctx.stroke()
+      ctx.globalCompositeOperation = "source-over"
     } else {
       // Main chalk stroke — thick for fingers
       ctx.globalCompositeOperation = "source-over"
-      ctx.lineWidth = 5
+      ctx.lineWidth = 10
       ctx.lineCap = "round"
       ctx.lineJoin = "round"
       ctx.strokeStyle = CHALK_COLOR
-      ctx.globalAlpha = 0.88
+      ctx.globalAlpha = 0.55
       ctx.beginPath()
       ctx.moveTo(last.x, last.y)
       ctx.lineTo(pos.x, pos.y)
       ctx.stroke()
 
       // Chalk roughness flecks
-      ctx.lineWidth = 1.2
-      ctx.globalAlpha = 0.15
-      for (let i = 0; i < 4; i++) {
-        const ox = (Math.random() - 0.5) * 6
-        const oy = (Math.random() - 0.5) * 6
+      ctx.lineWidth = 2.5
+      ctx.globalAlpha = 0.12
+      for (let i = 0; i < 6; i++) {
+        const ox = (Math.random() - 0.5) * 10
+        const oy = (Math.random() - 0.5) * 10
         ctx.beginPath()
         ctx.moveTo(last.x + ox, last.y + oy)
         ctx.lineTo(pos.x + ox, pos.y + oy)
@@ -137,16 +110,10 @@ export default function Chalkboard({ onClose }: ChalkboardProps) {
   const handleClear = () => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const ctx = canvas.getContext("2d")
+    const ctx = canvas.getContext("2d", { alpha: true })
     if (!ctx) return
-    ctx.fillStyle = BOARD_COLOR
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
-    for (let i = 0; i < 6000; i++) {
-      const x = Math.random() * canvas.width
-      const y = Math.random() * canvas.height
-      ctx.fillStyle = `rgba(200,212,196,${Math.random() * 0.02})`
-      ctx.fillRect(x, y, 1, 1)
-    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
     localStorage.removeItem(STORAGE_KEY)
   }
 
@@ -154,8 +121,33 @@ export default function Chalkboard({ onClose }: ChalkboardProps) {
     const canvas = canvasRef.current
     let dataUrl: string | null = null
     if (canvas) {
-      dataUrl = canvas.toDataURL()
-      localStorage.setItem(STORAGE_KEY, dataUrl)
+      // Create a clean transparent canvas and copy only non-dark pixels
+      const clean = document.createElement("canvas")
+      clean.width = canvas.width
+      clean.height = canvas.height
+      const cleanCtx = clean.getContext("2d", { alpha: true })
+      if (cleanCtx) {
+        cleanCtx.clearRect(0, 0, clean.width, clean.height)
+        cleanCtx.globalCompositeOperation = "source-over"
+        cleanCtx.drawImage(canvas, 0, 0)
+        // Remove dark background pixels — keep only bright chalk strokes
+        const imageData = cleanCtx.getImageData(0, 0, clean.width, clean.height)
+        const data = imageData.data
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i], g = data[i + 1], b = data[i + 2]
+          const brightness = (r + g + b) / 3
+          // Make dark pixels fully transparent
+          if (brightness < 60) {
+            data[i + 3] = 0
+          } else {
+            // Fade semi-dark pixels
+            data[i + 3] = Math.min(255, Math.round((brightness / 255) * 255))
+          }
+        }
+        cleanCtx.putImageData(imageData, 0, 0)
+        dataUrl = clean.toDataURL("image/png")
+        localStorage.setItem(STORAGE_KEY, dataUrl)
+      }
     }
     setZoomed(false)
     setTimeout(() => onClose(dataUrl), 420)
@@ -188,7 +180,7 @@ export default function Chalkboard({ onClose }: ChalkboardProps) {
         boxShadow: zoomed
           ? "inset 0 0 50px rgba(0,0,0,0.5), 0 0 0 2px #6b3f14, 0 20px 60px rgba(0,0,0,0.9)"
           : "none",
-        background: BOARD_COLOR,
+          background: BOARD_COLOR,
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
@@ -275,6 +267,8 @@ export default function Chalkboard({ onClose }: ChalkboardProps) {
             flex: 1, width: "100%", display: "block",
             cursor: eraser ? "cell" : "crosshair",
             touchAction: "none",
+            background: "transparent",
+            isolation: "isolate",
           }}
         />
 

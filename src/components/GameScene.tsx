@@ -128,9 +128,7 @@ export default function GameScene({ playerName }: Props) {
   const [showWish, setShowWish] = useState(false)
   const [lockedTapped, setLockedTapped] = useState(false)
   const [showChalkboard, setShowChalkboard] = useState(false)
-  const [boardDrawing, setBoardDrawing] = useState<string | null>(
-    localStorage.getItem("inherited_chalkboard_v1")
-  )
+  const [boardDrawing, setBoardDrawing] = useState<string | null>(null)
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -379,14 +377,14 @@ export default function GameScene({ playerName }: Props) {
           src={boardDrawing}
           style={{
             position: "absolute",
-            top: "5%", left: "45%",
-            width: "43%", height: "50%",
-            objectFit: "fill",
-            opacity: 0.55,
-            mixBlendMode: "screen",
-            zIndex: 3,
-            pointerEvents: "none",
-            filter: "blur(0.4px)",
+            top: "4%", left: "47%",
+          width: "38%", height: "44%",
+          objectFit: "fill",
+          opacity: 0.88,
+          zIndex: 3,
+          pointerEvents: "none",
+          filter: "blur(0.4px)",
+          borderRadius: "2px",
           }}
         />
       )}
