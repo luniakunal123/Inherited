@@ -27,7 +27,7 @@ export default function Chalkboard({ onClose }: ChalkboardProps) {
     if (!ctx) return
 
     canvas.width = Math.round(window.innerWidth * 0.95)
-    canvas.height = Math.round(window.innerHeight * 0.82)
+    canvas.height = Math.round(window.innerHeight * 0.72)
 
     // Transparent canvas — only chalk strokes are saved, no background
   }, [])
@@ -129,7 +129,8 @@ export default function Chalkboard({ onClose }: ChalkboardProps) {
       if (cleanCtx) {
         cleanCtx.clearRect(0, 0, clean.width, clean.height)
         cleanCtx.globalCompositeOperation = "source-over"
-        cleanCtx.drawImage(canvas, 0, 0)
+        // Scale down to half size so it fits naturally on the board in the scene
+        cleanCtx.drawImage(canvas, 0, 0, clean.width / 2, clean.height / 2)
         // Remove dark background pixels — keep only bright chalk strokes
         const imageData = cleanCtx.getImageData(0, 0, clean.width, clean.height)
         const data = imageData.data
@@ -173,7 +174,7 @@ export default function Chalkboard({ onClose }: ChalkboardProps) {
         top: zoomed ? "5%" : "8%",
         left: zoomed ? "2.5%" : "45%",
         width: zoomed ? "95%" : "43%",
-        height: zoomed ? "88%" : "50%",
+        height: zoomed ? "80%" : "50%",
         transition: "all 0.42s cubic-bezier(0.22,1,0.36,1)",
         border: "10px solid #4a2e10",
         outline: "2px solid #2a1808",
