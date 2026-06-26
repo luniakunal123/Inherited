@@ -378,7 +378,7 @@ export default function GameScene({ playerName }: Props) {
           style={{
             position: "absolute",
             top: "20%", left: "48%",
-          width: "38%", height: "52%",
+          width: "50%", height: "52%",
           objectFit: "fill",
           opacity: 0.88,
           zIndex: 3,
