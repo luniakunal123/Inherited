@@ -30,6 +30,7 @@ import Act204 from '../assets/backgrounds/Act204.png'
 import Act205 from '../assets/backgrounds/Act205.png'
 import AmbientCanvas from "./AmbientCanvas";
 import Chalkboard from "./Chalkboard";
+import CalendarPopup from "./CalendarPopup";
 
 const SCENE_IMAGES: Record<string, string> = {
   Act1, Act2, Act3, Act4, Act5, Act6, Act7, Act8, Act9, Act10, Act11,Act200,Act201,Act202,Act203,Act204,Act205,
@@ -129,6 +130,7 @@ export default function GameScene({ playerName }: Props) {
   const [lockedTapped, setLockedTapped] = useState(false)
   const [showChalkboard, setShowChalkboard] = useState(false)
   const [boardDrawing, setBoardDrawing] = useState<string | null>(null)
+  const [showCalendar, setShowCalendar] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -393,7 +395,14 @@ export default function GameScene({ playerName }: Props) {
       {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showChalkboard && (
         <StarHint onClick={() => setShowChalkboard(true)} />
       )}
-{showChalkboard && (
+{/* ✦ Calendar hint — classroom scenes only */}
+{(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showCalendar && !showChalkboard && (
+        <StarHint onClick={() => setShowCalendar(true)} top="9%" left="17%" />
+      )}
+
+      {showCalendar && <CalendarPopup onClose={() => setShowCalendar(false)} />}
+
+      {showChalkboard && (
         <Chalkboard
           onClose={(dataUrl) => {
             if (dataUrl) setBoardDrawing(dataUrl)
@@ -575,7 +584,7 @@ function EndScreen() {
   )
 }
 
-function StarHint({ onClick }: { onClick: () => void }) {
+function StarHint({ onClick, top = "22%", left = "64%" }: { onClick: () => void; top?: string; left?: string }) {
   const [opacity, setOpacity] = useState(0)
 
   useEffect(() => {
@@ -599,7 +608,7 @@ function StarHint({ onClick }: { onClick: () => void }) {
       onClick={onClick}
       style={{
         position: "absolute",
-        top: "22%", left: "64%",
+        top, left,
         zIndex: 6,
         cursor: "pointer",
         color: "rgba(235,232,210,1)",
