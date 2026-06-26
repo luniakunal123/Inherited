@@ -377,7 +377,7 @@ export default function GameScene({ playerName }: Props) {
           src={boardDrawing}
           style={{
             position: "absolute",
-            top: "12%", left: "48%",
+            top: "20%", left: "48%",
           width: "38%", height: "52%",
           objectFit: "fill",
           opacity: 0.88,
