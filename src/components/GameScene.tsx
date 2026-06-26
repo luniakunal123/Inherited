@@ -28,6 +28,8 @@ import Act202 from '../assets/backgrounds/Act202.png'
 import Act203 from '../assets/backgrounds/Act203.png'
 import Act204 from '../assets/backgrounds/Act204.png'
 import Act205 from '../assets/backgrounds/Act205.png'
+import AmbientCanvas from "./AmbientCanvas";
+import Chalkboard from "./Chalkboard";
 
 const SCENE_IMAGES: Record<string, string> = {
   Act1, Act2, Act3, Act4, Act5, Act6, Act7, Act8, Act9, Act10, Act11,Act200,Act201,Act202,Act203,Act204,Act205,
@@ -56,6 +58,13 @@ const BG_COLOURS: Record<string, string> = {
 }
 
 type Props = { playerName: string }
+
+const getAmbientScene = (img: string) => {
+  if (img === 'Act1' || img === 'Act4' || img === 'Act5' || img === 'Act6') return 'classroom'
+  if (img === 'Act2' || img === 'Act3' || img === 'Act7' || img === 'Act8') return 'kitchen'
+  if (img === 'Act9' || img === 'Act10' || img === 'Act11') return 'office'
+  return 'default'
+}
 
 export default function GameScene({ playerName }: Props) {
   const { state, choose, lockMessage } = useInkStory(playerName)
@@ -118,6 +127,10 @@ export default function GameScene({ playerName }: Props) {
   const [screenShaking, setScreenShaking] = useState(false)
   const [showWish, setShowWish] = useState(false)
   const [lockedTapped, setLockedTapped] = useState(false)
+  const [showChalkboard, setShowChalkboard] = useState(false)
+  const [boardDrawing, setBoardDrawing] = useState<string | null>(
+    localStorage.getItem("inherited_chalkboard_v1")
+  )
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -303,6 +316,7 @@ export default function GameScene({ playerName }: Props) {
             zIndex: 1,
           }} />
         )}
+        <AmbientCanvas scene={getAmbientScene(tags['image'] ?? '')} active={true} />
         <p style={{
           position: 'absolute',
           top: '50%',
@@ -349,12 +363,61 @@ export default function GameScene({ playerName }: Props) {
         }} />
       )}
 
-      {sceneImage && (
+{sceneImage && (
         <div style={{
           position: 'absolute', inset: 0,
           background: 'linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%)',
           zIndex: 1,
         }} />
+      )}
+
+<AmbientCanvas scene={getAmbientScene(tags['image'] ?? '')} active={transition === 'idle'} />
+
+      {/* Drawing overlay on blackboard in scene */}
+      {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && boardDrawing && !showChalkboard && (
+        <img
+          src={boardDrawing}
+          style={{
+            position: "absolute",
+            top: "5%", left: "45%",
+            width: "43%", height: "50%",
+            objectFit: "fill",
+            opacity: 0.55,
+            mixBlendMode: "screen",
+            zIndex: 3,
+            pointerEvents: "none",
+            filter: "blur(0.4px)",
+          }}
+        />
+      )}
+
+      {/* ✦ Blackboard interaction hint — classroom scenes only */}
+      {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showChalkboard && (
+        <div
+          onClick={() => setShowChalkboard(true)}
+          style={{
+            position: "absolute",
+            top: "32%", left: "68%",
+            zIndex: 6,
+            cursor: "pointer",
+            color: "rgba(235,232,210,0.55)",
+            fontSize: "1.1rem",
+            userSelect: "none",
+            animation: "starPulse 2.8s ease-in-out infinite",
+            textShadow: "0 0 8px rgba(235,232,210,0.3)",
+          }}
+        >
+          ✦
+        </div>
+      )}
+
+{showChalkboard && (
+        <Chalkboard
+          onClose={(dataUrl) => {
+            if (dataUrl) setBoardDrawing(dataUrl)
+            setShowChalkboard(false)
+          }}
+        />
       )}
 
       <div style={{
