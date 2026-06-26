@@ -28,6 +28,7 @@ import Act202 from '../assets/backgrounds/Act202.png'
 import Act203 from '../assets/backgrounds/Act203.png'
 import Act204 from '../assets/backgrounds/Act204.png'
 import Act205 from '../assets/backgrounds/Act205.png'
+import WindowView from '../assets/backgrounds/Window.png'
 import AmbientCanvas from "./AmbientCanvas";
 import Chalkboard from "./Chalkboard";
 import CalendarPopup from "./CalendarPopup";
@@ -131,6 +132,7 @@ export default function GameScene({ playerName }: Props) {
   const [showChalkboard, setShowChalkboard] = useState(false)
   const [boardDrawing, setBoardDrawing] = useState<string | null>(null)
   const [showCalendar, setShowCalendar] = useState(false)
+  const [showWindow, setShowWindow] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -398,6 +400,61 @@ export default function GameScene({ playerName }: Props) {
 {/* ✦ Calendar hint — classroom scenes only */}
 {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showCalendar && !showChalkboard && (
         <StarHint onClick={() => setShowCalendar(true)} top="9%" left="17%" />
+      )}
+
+       {/* ✦ Window hint */}
+       {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showWindow && !showChalkboard && (
+        <StarHint onClick={() => setShowWindow(true)} top="15%" left="7%" />
+      )}
+
+      {/* Window view — zooms in from window position */}
+      {showWindow && (
+        <div
+          onClick={() => setShowWindow(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            animation: "fadeIn 0.5s ease forwards",
+          }}
+        >
+          {/* Classroom dims behind */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "rgba(0,0,0,0.6)",
+          }} />
+
+          {/* Window frame — positioned where the window is in the scene */}
+          <div style={{
+            position: "absolute",
+            top: 0, left: 0,
+            width: "100%", height: "100%",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <img
+              src={WindowView}
+              style={{
+                position: "absolute", inset: 0,
+                width: "100%", height: "100%",
+                objectFit: "cover",
+                animation: "fadeIn 0.6s ease forwards",
+              }}
+            />
+            <AmbientCanvas scene="window" active={true} />
+          </div>
+
+          {/* Hint */}
+          <div style={{
+            position: "absolute", bottom: "5%",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
       )}
 
       {showCalendar && <CalendarPopup onClose={() => setShowCalendar(false)} />}
