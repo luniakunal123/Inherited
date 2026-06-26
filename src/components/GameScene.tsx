@@ -29,6 +29,8 @@ import Act203 from '../assets/backgrounds/Act203.png'
 import Act204 from '../assets/backgrounds/Act204.png'
 import Act205 from '../assets/backgrounds/Act205.png'
 import WindowView from '../assets/backgrounds/Window.png'
+import ThoughtView from '../assets/backgrounds/Thought.png'
+import PledgeView from '../assets/backgrounds/Pledge.png'
 import AmbientCanvas from "./AmbientCanvas";
 import Chalkboard from "./Chalkboard";
 import CalendarPopup from "./CalendarPopup";
@@ -133,6 +135,8 @@ export default function GameScene({ playerName }: Props) {
   const [boardDrawing, setBoardDrawing] = useState<string | null>(null)
   const [showCalendar, setShowCalendar] = useState(false)
   const [showWindow, setShowWindow] = useState(false)
+  const [showThought, setShowThought] = useState(false)
+  const [showPledge, setShowPledge] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -402,7 +406,85 @@ export default function GameScene({ playerName }: Props) {
         <StarHint onClick={() => setShowCalendar(true)} top="9%" left="17%" />
       )}
 
-       {/* ✦ Window hint */}
+       {/* ✦ Pledge hint */}
+      {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showPledge && !showChalkboard && (
+        <StarHint onClick={() => setShowPledge(true)} top="18%" left="93%" />
+      )}
+
+      {/* Pledge overlay */}
+      {showPledge && (
+        <div
+          onClick={() => setShowPledge(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <img
+            src={PledgeView}
+            style={{
+              maxWidth: "60vw", maxHeight: "85vh",
+              objectFit: "contain",
+              borderRadius: "4px",
+              boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+            }}
+          />
+          <div style={{
+            position: "absolute", bottom: "5%",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ✦ Thought poster hint */}
+      {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showThought && !showChalkboard && (
+        <StarHint onClick={() => setShowThought(true)} top="33%" left="40%" />
+      )}
+
+      {/* Thought poster overlay */}
+      {showThought && (
+        <div
+          onClick={() => setShowThought(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <img
+            src={ThoughtView}
+            style={{
+              maxWidth: "60vw", maxHeight: "85vh",
+              objectFit: "contain",
+              borderRadius: "4px",
+              boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+            }}
+          />
+          <div style={{
+            position: "absolute", bottom: "5%",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ✦ Window hint */}
        {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showWindow && !showChalkboard && (
         <StarHint onClick={() => setShowWindow(true)} top="15%" left="7%" />
       )}
