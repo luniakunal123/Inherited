@@ -31,6 +31,7 @@ import Act205 from '../assets/backgrounds/Act205.png'
 import WindowView from '../assets/backgrounds/Window.png'
 import ThoughtView from '../assets/backgrounds/Thought.png'
 import PledgeView from '../assets/backgrounds/Pledge.png'
+import PileView from '../assets/backgrounds/Pile.png'
 import AmbientCanvas from "./AmbientCanvas";
 import Chalkboard from "./Chalkboard";
 import CalendarPopup from "./CalendarPopup";
@@ -137,6 +138,7 @@ export default function GameScene({ playerName }: Props) {
   const [showWindow, setShowWindow] = useState(false)
   const [showThought, setShowThought] = useState(false)
   const [showPledge, setShowPledge] = useState(false)
+  const [showPile, setShowPile] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -380,7 +382,7 @@ export default function GameScene({ playerName }: Props) {
 <AmbientCanvas scene={getAmbientScene(tags['image'] ?? '')} active={transition === 'idle'} />
 
       {/* Drawing overlay on blackboard in scene */}
-      {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && boardDrawing && !showChalkboard && (
+      {(tags['image'] === 'Act1' || tags['image'] === 'Act3') && boardDrawing && !showChalkboard && (
         <img
           src={boardDrawing}
           style={{
@@ -398,16 +400,72 @@ export default function GameScene({ playerName }: Props) {
       )}
 
       {/* ✦ Blackboard interaction hint — classroom scenes only */}
-      {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showChalkboard && (
+      {(tags['image'] === 'Act1' || tags['image'] === 'Act3') && !showChalkboard && (
         <StarHint onClick={() => setShowChalkboard(true)} />
       )}
 {/* ✦ Calendar hint — classroom scenes only */}
-{(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showCalendar && !showChalkboard && (
+{(tags['image'] === 'Act1' || tags['image'] === 'Act3') && !showCalendar && !showChalkboard && (
         <StarHint onClick={() => setShowCalendar(true)} top="9%" left="17%" />
       )}
 
-       {/* ✦ Pledge hint */}
-      {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showPledge && !showChalkboard && (
+       {/* ✦ Pile of papers hint */}
+      {(tags['image'] === 'Act1' || tags['image'] === 'Act3') && !showPile && !showChalkboard && (
+        <StarHint onClick={() => setShowPile(true)} top="52%" left="60%" />
+      )}
+
+      {/* Pile overlay */}
+      {showPile && (
+        <div
+          onClick={() => setShowPile(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <img
+            src={PileView}
+            style={{
+              maxWidth: "60vw", maxHeight: "85vh",
+              objectFit: "contain",
+              borderRadius: "4px",
+              boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+            }}
+          />
+          <p style={{
+            position: "absolute",
+            bottom: "18%",
+            left: "50%",
+            transform: "translateX(-50%)",
+            color: "rgba(212,207,200,0.7)",
+            fontSize: "0.9rem",
+            fontStyle: "italic",
+            letterSpacing: "0.06em",
+            textAlign: "center",
+            zIndex: 3,
+            margin: 0,
+            animation: "fadeIn 1.5s ease forwards",
+            whiteSpace: "nowrap",
+          }}>
+            Mine isn't here anymore.
+          </p>
+          <div style={{
+            position: "absolute", bottom: "5%",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ✦ Pledge hint */}
+      {(tags['image'] === 'Act1' || tags['image'] === 'Act3') && !showPledge && !showChalkboard && (
         <StarHint onClick={() => setShowPledge(true)} top="18%" left="93%" />
       )}
 
@@ -446,7 +504,7 @@ export default function GameScene({ playerName }: Props) {
       )}
 
       {/* ✦ Thought poster hint */}
-      {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showThought && !showChalkboard && (
+      {(tags['image'] === 'Act1' || tags['image'] === 'Act3') && !showThought && !showChalkboard && (
         <StarHint onClick={() => setShowThought(true)} top="33%" left="40%" />
       )}
 
@@ -485,7 +543,7 @@ export default function GameScene({ playerName }: Props) {
       )}
 
       {/* ✦ Window hint */}
-       {(tags['image'] === 'Act1' || tags['image'] === 'Act4') && !showWindow && !showChalkboard && (
+       {(tags['image'] === 'Act1' || tags['image'] === 'Act3') && !showWindow && !showChalkboard && (
         <StarHint onClick={() => setShowWindow(true)} top="15%" left="7%" />
       )}
 
