@@ -410,7 +410,7 @@ export default function GameScene({ playerName }: Props) {
 
        {/* ✦ Pile of papers hint */}
       {(tags['image'] === 'Act1' || tags['image'] === 'Act3') && !showPile && !showChalkboard && (
-        <StarHint onClick={() => setShowPile(true)} top="52%" left="60%" />
+        <StarHint onClick={() => setShowPile(true)} top="50%" left="60%" />
       )}
 
       {/* Pile overlay */}
