@@ -56,7 +56,7 @@ const AmbientCanvas = ({ scene = "classroom", active = true }: AmbientCanvasProp
     }
     window.addEventListener("resize", resize)
 
-    const COUNT = scene === "classroom" ? 320 : scene === "window" ? 400 : scene === "home" ? 120 : scene === "gate" ? 180 : scene === "default" ? 0 : 60
+    const COUNT = scene === "classroom" ? 120 : scene === "window" ? 120 : scene === "home" ? 120 : scene === "gate" ? 120 : scene === "default" ? 0 : 60
 
     const motes: DustMote[] = Array.from({ length: COUNT }, () => {
       const m = spawnMote(canvas.width, canvas.height, scene)

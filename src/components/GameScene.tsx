@@ -368,9 +368,11 @@ export default function GameScene({ playerName }: Props) {
       position: 'relative',
       overflow: 'hidden',
       display: 'flex',
-      alignItems: 'flex-end',
-      justifyContent: 'center',
-      paddingBottom: '1rem',
+      alignItems: tags['image'] === 'Act6' ? 'flex-start' : 'flex-end',
+      justifyContent: tags['image'] === 'Act6' ? 'flex-start' : 'center',
+      paddingBottom: tags['image'] === 'Act6' ? '0' : '1rem',
+      paddingTop: tags['image'] === 'Act6' ? '1rem' : '0',
+      paddingLeft: tags['image'] === 'Act6' ? '1rem' : '0',
       animation: screenShaking ? 'screenShake 0.6s ease' : 'none',
     }}>
 
@@ -422,7 +424,7 @@ export default function GameScene({ playerName }: Props) {
 
        {/* ✦ Shoes hint — Act4 only */}
       {tags['image'] === 'Act4' && !showShoes && (
-        <StarHint onClick={() => setShowShoes(true)} top="72%" left="73%" />
+        <StarHint onClick={() => setShowShoes(true)} top="69%" left="73%" />
       )}
 
 {showShoes && (
@@ -542,7 +544,7 @@ export default function GameScene({ playerName }: Props) {
 
       {/* ✦ Geometry box hint — Act11 only */}
       {tags['image'] === 'Act11' && !showBox && (
-        <StarHint onClick={() => setShowBox(true)} top="92%" left="50%" />
+        <StarHint onClick={() => setShowBox(true)} top="88%" left="54%" />
       )}
 
       {showBox && (
@@ -599,7 +601,7 @@ export default function GameScene({ playerName }: Props) {
 
       {/* ✦ Telephone hint — Act4 only */}
       {tags['image'] === 'Act4' && !showTelephone && (
-        <StarHint onClick={() => setShowTelephone(true)} top="22%" left="15%" />
+        <StarHint onClick={() => setShowTelephone(true)} top="24%" left="15%" />
       )}
 
       {/* Telephone overlay — auto closes after 5s */}
