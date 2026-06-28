@@ -21,7 +21,7 @@ The results are out.
 # character:rahul_teen_neutral
 # image:Act1
 # sound:Classroom
-{player_name}, you are 16.
+The classroom suddenly feels louder.
 Your phone is face-down on the desk.
 You put it there twenty minutes ago and haven't touched it since.
 Everyone around you already knows.

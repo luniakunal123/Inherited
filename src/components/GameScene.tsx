@@ -32,6 +32,10 @@ import WindowView from '../assets/backgrounds/Window.png'
 import ThoughtView from '../assets/backgrounds/Thought.png'
 import PledgeView from '../assets/backgrounds/Pledge.png'
 import PileView from '../assets/backgrounds/Pile.png'
+import TelephoneView from '../assets/backgrounds/Telephone.png'
+import ShoesView from '../assets/backgrounds/Shoes.png'
+import BagView from '../assets/backgrounds/Bag.png'
+import BoxView from '../assets/backgrounds/Box.png'
 import AmbientCanvas from "./AmbientCanvas";
 import Chalkboard from "./Chalkboard";
 import CalendarPopup from "./CalendarPopup";
@@ -65,9 +69,11 @@ const BG_COLOURS: Record<string, string> = {
 type Props = { playerName: string }
 
 const getAmbientScene = (img: string) => {
-  if (img === 'Act1' || img === 'Act4' || img === 'Act5' || img === 'Act6') return 'classroom'
-  if (img === 'Act2' || img === 'Act3' || img === 'Act7' || img === 'Act8') return 'kitchen'
-  if (img === 'Act9' || img === 'Act10' || img === 'Act11') return 'office'
+  if (img === 'Act1') return 'classroom'
+  if (img === 'Act4') return 'window'
+  if (img === 'Act5') return 'home'
+  if (img === 'Act6') return 'gate'
+  if (img === 'Act2' || img === 'Act3') return 'kitchen'
   return 'default'
 }
 
@@ -139,6 +145,12 @@ export default function GameScene({ playerName }: Props) {
   const [showThought, setShowThought] = useState(false)
   const [showPledge, setShowPledge] = useState(false)
   const [showPile, setShowPile] = useState(false)
+  const [showTelephone, setShowTelephone] = useState(false)
+  const [showShoes, setShowShoes] = useState(false)
+  const [showBag, setShowBag] = useState(false)
+  const [showBox, setShowBox] = useState(false)
+  const [showKitchenBlock, setShowKitchenBlock] = useState(false)
+  const [kitchenBlockDone, setKitchenBlockDone] = useState(false)
 
   useEffect(() => {
     const handleResize = () => setIsPortrait(window.innerHeight > window.innerWidth)
@@ -408,7 +420,194 @@ export default function GameScene({ playerName }: Props) {
         <StarHint onClick={() => setShowCalendar(true)} top="9%" left="17%" />
       )}
 
-       {/* ✦ Pile of papers hint */}
+       {/* ✦ Shoes hint — Act4 only */}
+      {tags['image'] === 'Act4' && !showShoes && (
+        <StarHint onClick={() => setShowShoes(true)} top="72%" left="73%" />
+      )}
+
+{showShoes && (
+        <div
+          onClick={() => setShowShoes(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            flexDirection: "column",
+            gap: "2rem",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <p style={{
+            color: "rgba(212,207,200,0.75)",
+            fontSize: "0.95rem",
+            fontStyle: "italic",
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            margin: 0,
+            lineHeight: 1.8,
+            animation: "fadeIn 1.2s ease forwards",
+          }}>
+            You touch the leather.<br/>It's still warm.
+          </p>
+          <img
+            src={ShoesView}
+            style={{
+              maxWidth: "70vw", maxHeight: "68vh",
+              objectFit: "contain",
+              borderRadius: "4px",
+              boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+            }}
+          />
+          <div style={{
+            position: "absolute", bottom: "5%",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ○ Kitchen door hint — Act4 only */}
+      {tags['image'] === 'Act4' && !showKitchenBlock && !kitchenBlockDone && (
+        <PulseCircleOnce onClick={() => { setShowKitchenBlock(true); setKitchenBlockDone(true) }} top="20%" left="48%" />
+      )}
+
+{showKitchenBlock && (
+        <KitchenBlockMessage onClose={() => setShowKitchenBlock(false)} />
+      )}
+
+      {/* ✦ Bag hint — Act5 only */}
+      {tags['image'] === 'Act6' && !showBag && (
+        <StarHint onClick={() => setShowBag(true)} top="75%" left="14%" />
+      )}
+
+      {showBag && (
+        <div
+          onClick={() => setShowBag(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "flex-start", justifyContent: "center",
+            flexDirection: "column",
+            paddingTop: "6%",
+            gap: "2rem",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <p style={{
+            color: "rgba(212,207,200,0.75)",
+            fontSize: "0.95rem",
+            fontStyle: "italic",
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            width: "100%",
+            margin: 0,
+            lineHeight: 1.8,
+            animation: "fadeIn 1.2s ease forwards",
+          }}>
+            My marksheet is no longer here.
+          </p>
+          <div style={{
+            display: "flex", justifyContent: "center", width: "100%",
+          }}>
+            <img
+              src={BagView}
+              style={{
+                maxWidth: "60vw", maxHeight: "68vh",
+                objectFit: "contain",
+                borderRadius: "4px",
+                boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+              }}
+            />
+          </div>
+          <div style={{
+            position: "absolute", bottom: "5%", left: "50%",
+            transform: "translateX(-50%)",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ✦ Geometry box hint — Act11 only */}
+      {tags['image'] === 'Act11' && !showBox && (
+        <StarHint onClick={() => setShowBox(true)} top="92%" left="50%" />
+      )}
+
+      {showBox && (
+        <div
+          onClick={() => setShowBox(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "flex-start", justifyContent: "center",
+            flexDirection: "column",
+            paddingTop: "6%",
+            gap: "2rem",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <p style={{
+            color: "rgba(212,207,200,0.75)",
+            fontSize: "0.95rem",
+            fontStyle: "italic",
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            width: "100%",
+            margin: 0,
+            lineHeight: 1.8,
+            animation: "fadeIn 1.2s ease forwards",
+          }}>
+            The geometry box.<br/>Papa said it was too expensive.
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+            <img
+              src={BoxView}
+              style={{
+                maxWidth: "60vw", maxHeight: "68vh",
+                objectFit: "contain",
+                borderRadius: "4px",
+                boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+              }}
+            />
+          </div>
+          <div style={{
+            position: "absolute", bottom: "5%", left: "50%",
+            transform: "translateX(-50%)",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ✦ Telephone hint — Act4 only */}
+      {tags['image'] === 'Act4' && !showTelephone && (
+        <StarHint onClick={() => setShowTelephone(true)} top="22%" left="15%" />
+      )}
+
+      {/* Telephone overlay — auto closes after 5s */}
+      {showTelephone && (
+        <TelephoneOverlay onClose={() => setShowTelephone(false)} />
+      )}
+
+      {/* ✦ Pile of papers hint */}
       {(tags['image'] === 'Act1' || tags['image'] === 'Act3') && !showPile && !showChalkboard && (
         <StarHint onClick={() => setShowPile(true)} top="50%" left="60%" />
       )}
@@ -781,6 +980,148 @@ function EndScreen() {
   )
 }
 
+function KitchenBlockMessage({ onClose }: { onClose: () => void }) {
+  const [opacity, setOpacity] = useState(0)
+
+  useEffect(() => {
+    const fadeIn = setTimeout(() => setOpacity(1), 30)
+    const fadeOut = setTimeout(() => setOpacity(0), 4000)
+    const close = setTimeout(() => onClose(), 5000)
+    return () => { clearTimeout(fadeIn); clearTimeout(fadeOut); clearTimeout(close) }
+  }, [])
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 490,
+        display: "flex", alignItems: "flex-start", justifyContent: "center",
+        paddingTop: "6%",
+        opacity,
+        transition: "opacity 0.8s ease",
+        pointerEvents: "auto",
+      }}
+    >
+      <p style={{
+        color: "rgba(212,207,200,0.75)",
+        fontSize: "0.95rem",
+        fontStyle: "italic",
+        letterSpacing: "0.08em",
+        textAlign: "center",
+        margin: 0,
+        lineHeight: 1.8,
+      }}>
+        Mummy said to wait here.
+      </p>
+    </div>
+  )
+}
+
+function PulseCircle({ onClick, top, left }: { onClick: () => void; top: string; left: string }) {
+  const [scale, setScale] = useState(1)
+  const [opacity, setOpacity] = useState(0.2)
+
+  useEffect(() => {
+    let rising = true
+    let val = 0
+    const interval = setInterval(() => {
+      if (rising) {
+        val = Math.min(1, val + 0.04)
+        if (val >= 1) rising = false
+      } else {
+        val = Math.max(0, val - 0.04)
+        if (val <= 0) rising = true
+      }
+      setScale(1 + val * 0.15)
+      setOpacity(0.2 + val * 0.3)
+    }, 40)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        position: "absolute",
+        top, left,
+        transform: `translate(-50%, -50%) scale(${scale})`,
+        width: "40px", height: "40px",
+        borderRadius: "50%",
+        background: `rgba(255,255,255,${opacity})`,
+        border: "1px solid rgba(255,255,255,0.4)",
+        cursor: "pointer",
+        zIndex: 6,
+        pointerEvents: "auto",
+        transition: "transform 0.04s linear, background 0.04s linear",
+      }}
+    />
+  )
+}
+
+function PulseCircleOnce({ onClick, top, left }: { onClick: () => void; top: string; left: string }) {
+  const [scale, setScale] = useState(1)
+  const [opacity, setOpacity] = useState(0.2)
+  const [gone, setGone] = useState(false)
+
+  useEffect(() => {
+    let rising = true
+    let val = 0
+    const interval = setInterval(() => {
+      if (rising) {
+        val = Math.min(1, val + 0.04)
+        if (val >= 1) rising = false
+      } else {
+        val = Math.max(0, val - 0.04)
+        if (val <= 0) rising = true
+      }
+      setScale(1 + val * 0.15)
+      setOpacity(0.2 + val * 0.3)
+    }, 40)
+    return () => clearInterval(interval)
+  }, [])
+
+  if (gone) return null
+
+  return (
+    <div
+      onClick={() => { setGone(true); onClick() }}
+      style={{
+        position: "absolute",
+        top, left,
+        transform: `translate(-50%, -50%)`,
+        display: "flex",
+        alignItems: "center",
+        gap: "8px",
+        cursor: "pointer",
+        zIndex: 6,
+        pointerEvents: "auto",
+      }}
+    >
+      <span style={{
+        color: `rgba(255,255,255,${opacity + 0.1})`,
+        fontSize: "0.85rem",
+        letterSpacing: "0.12em",
+        fontStyle: "italic",
+        userSelect: "none",
+        transition: "opacity 0.04s linear",
+      }}>
+        Enter
+      </span>
+      <div
+        style={{
+          transform: `scale(${scale})`,
+          width: "40px", height: "40px",
+          borderRadius: "50%",
+          background: `rgba(255,255,255,${opacity})`,
+          border: "1px solid rgba(255,255,255,0.4)",
+          flexShrink: 0,
+          transition: "transform 0.04s linear, background 0.04s linear",
+        }}
+      />
+    </div>
+  )
+}
+
 function StarHint({ onClick, top = "22%", left = "64%" }: { onClick: () => void; top?: string; left?: string }) {
   const [opacity, setOpacity] = useState(0)
 
@@ -818,6 +1159,64 @@ function StarHint({ onClick, top = "22%", left = "64%" }: { onClick: () => void;
     >
       ✦
     </span>
+  )
+}
+
+function TelephoneOverlay({ onClose }: { onClose: () => void }) {
+  const [opacity, setOpacity] = useState(0)
+
+  useEffect(() => {
+    // Fade in
+    const fadeIn = setTimeout(() => setOpacity(1), 30)
+    // Fade out at 4s
+    const fadeOut = setTimeout(() => setOpacity(0), 4000)
+    // Close at 5s
+    const close = setTimeout(() => onClose(), 5000)
+    return () => { clearTimeout(fadeIn); clearTimeout(fadeOut); clearTimeout(close) }
+  }, [])
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 490,
+        background: "rgba(0,0,0,0.88)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        flexDirection: "column",
+        opacity,
+        transition: "opacity 0.8s ease",
+      }}
+    >
+      <div style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "2rem",
+        width: "100%",
+      }}>
+        <p style={{
+          color: "rgba(212,207,200,0.75)",
+          fontSize: "0.95rem",
+          fontStyle: "italic",
+          letterSpacing: "0.08em",
+          textAlign: "center",
+          margin: 0,
+          zIndex: 3,
+          animation: "fadeIn 1.2s ease forwards",
+        }}>
+          Pick up. You almost dial. Stop.
+        </p>
+        <img
+          src={TelephoneView}
+          style={{
+            maxWidth: "60vw", maxHeight: "68vh",
+            objectFit: "contain",
+            borderRadius: "4px",
+            boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+          }}
+        />
+      </div>
+    </div>
   )
 }
 
