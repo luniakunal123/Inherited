@@ -485,7 +485,7 @@ export default function GameScene({ playerName }: Props) {
 
       {/* ✦ Bag hint — Act5 only */}
       {tags['image'] === 'Act6' && !showBag && (
-        <StarHint onClick={() => setShowBag(true)} top="75%" left="14%" />
+        <StarHint onClick={() => setShowBag(true)} top="68%" left="14%" />
       )}
 
       {showBag && (
@@ -544,7 +544,7 @@ export default function GameScene({ playerName }: Props) {
 
       {/* ✦ Geometry box hint — Act11 only */}
       {tags['image'] === 'Act11' && !showBox && (
-        <StarHint onClick={() => setShowBox(true)} top="88%" left="54%" />
+        <StarHint onClick={() => setShowBox(true)} top="85%" left="54%" />
       )}
 
       {showBox && (
