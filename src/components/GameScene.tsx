@@ -34,8 +34,8 @@ import PledgeView from '../assets/backgrounds/Pledge.png'
 import PileView from '../assets/backgrounds/Pile.png'
 import TelephoneView from '../assets/backgrounds/Telephone.png'
 import ShoesView from '../assets/backgrounds/Shoes.png'
-import BagView from '../assets/backgrounds/Bag.png'
-import BoxView from '../assets/backgrounds/Box.png'
+import BagView from '../assets/backgrounds/bag.png'
+import BoxView from '../assets/backgrounds/box.png'
 import AmbientCanvas from "./AmbientCanvas";
 import Chalkboard from "./Chalkboard";
 import CalendarPopup from "./CalendarPopup";
