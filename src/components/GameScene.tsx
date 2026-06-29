@@ -358,11 +358,12 @@ export default function GameScene({ playerName }: Props) {
       position: 'relative',
       overflow: 'hidden',
       display: 'flex',
-      alignItems: tags['image'] === 'Act6' ? 'flex-start' : 'flex-end',
-      justifyContent: tags['image'] === 'Act6' ? 'flex-start' : 'center',
+      alignItems: tags['image'] === 'Act6' ? 'flex-start' : tags['image'] === 'Act200' ? 'flex-end' : 'flex-end',
+      justifyContent: tags['image'] === 'Act6' ? 'flex-start' : tags['image'] === 'Act200' ? 'flex-end' : 'center',
       paddingBottom: tags['image'] === 'Act6' ? '0' : '1rem',
       paddingTop: tags['image'] === 'Act6' ? '1rem' : '0',
       paddingLeft: tags['image'] === 'Act6' ? '1rem' : '0',
+      paddingRight: tags['image'] === 'Act200' ? '1rem' : '0',
       animation: screenShaking ? 'screenShake 0.6s ease' : 'none',
     }}>
 
@@ -414,7 +415,7 @@ export default function GameScene({ playerName }: Props) {
 
        {/* ✦ Shoes hint — Act4 only */}
       {tags['image'] === 'Act4' && !showShoes && (
-        <StarHint onClick={() => setShowShoes(true)} top="69%" left="73%" />
+        <StarHint onClick={() => setShowShoes(true)} top="67%" left="73%" />
       )}
 
 {showShoes && (
@@ -466,7 +467,7 @@ export default function GameScene({ playerName }: Props) {
 
       {/* ○ Kitchen door hint — Act4 only */}
       {tags['image'] === 'Act4' && !showKitchenBlock && !kitchenBlockDone && (
-        <PulseCircleOnce onClick={() => { setShowKitchenBlock(true); setKitchenBlockDone(true) }} top="20%" left="48%" />
+        <PulseCircleOnce onClick={() => { setShowKitchenBlock(true); setKitchenBlockDone(true) }} top="20%" left="40%" />
       )}
 
 {showKitchenBlock && (
@@ -885,7 +886,7 @@ export default function GameScene({ playerName }: Props) {
 
       {/* ✦ Telephone hint — Act4 only */}
       {tags['image'] === 'Act4' && !showTelephone && (
-        <StarHint onClick={() => setShowTelephone(true)} top="22%" left="15%" />
+        <StarHint onClick={() => setShowTelephone(true)} top="23%" left="15%" />
       )}
 
       {/* Telephone overlay — auto closes after 5s */}
