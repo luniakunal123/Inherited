@@ -285,9 +285,23 @@ export default function GameScene({ playerName }: Props) {
         color: 'rgba(255,255,255,0.85)', display: 'flex', flexDirection: 'column',
         justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '2rem',
       }}>
-        <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>↻</div>
+        <div
+          onClick={() => {
+            screen.orientation?.lock?.('landscape').catch(() => {})
+            document.documentElement.requestFullscreen?.().catch(() => {})
+          }}
+          style={{
+            fontSize: '4rem', marginBottom: '1.5rem', cursor: 'pointer',
+            animation: 'spin 2s ease-in-out infinite',
+            display: 'inline-block',
+            textShadow: '0 0 20px rgba(255,255,255,0.4)',
+            filter: 'drop-shadow(0 0 8px rgba(255,255,255,0.3))',
+          }}
+        >
+          ↻
+        </div>
         <p style={{ fontSize: '1.1rem' }}>Please rotate your device.</p>
-        <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>Some stories are wider than they are tall.</p>
+        <p style={{ opacity: 0.6, fontSize: '0.9rem' }}>Tap the arrow to try auto-rotate.</p>
       </div>
     )
   }
@@ -1133,21 +1147,24 @@ export default function GameScene({ playerName }: Props) {
 
 <div style={{
         display: tags['image'] === 'Act204' ? 'none' : 'block',
-        position: (tags['image'] === 'Act5' || tags['image'] === 'Act8') ? 'fixed' : 'relative',
-        zIndex: 2, width: '92%',
+        position: (tags['image'] === 'Act5' || tags['image'] === 'Act8' || tags['image'] === 'Act200') ? 'fixed' : 'relative',
+        zIndex: 2, width: (['Act5', 'Act6', 'Act11', 'Act201', 'Act203', 'Act205', 'Option1', 'Option2', 'Option3'].includes(tags['image'])) ? '70%' : '92%',
+        ...(tags['image'] === 'Act200' ? {
+          bottom: '1rem', right: '1rem', left: 'auto', width: '40%',
+        } : {}),
         background: 'rgba(0,0,0,0.25)', borderRadius: '8px',
         padding: '0.8rem 1rem', border: 'none',
         ...(tags['image'] === 'Act5' && state.choices.length === 0 ? {
-          top: '1rem', left: '4%', width: '50%',
+          top: '1rem', left: '4%', width: '70%',
         } : {}),
         ...(tags['image'] === 'Act5' && state.choices.length > 0 ? {
-          bottom: '1rem', left: '4%', width: '50%', top: 'auto',
+          bottom: '1rem', left: '4%', width: '70%', top: 'auto',
         } : {}),
         ...(tags['image'] === 'Act8' && state.choices.length === 0 ? {
-          top: '1rem', left: '4%', width: '50%',
+          top: '1rem', left: '4%', width: '70%',
         } : {}),
         ...(tags['image'] === 'Act8' && state.choices.length > 0 ? {
-          bottom: '1rem', left: '4%', width: '50%', top: 'auto',
+          bottom: '1rem', left: '4%', width: '70%', top: 'auto',
         } : {}),
       }}>
         {state.paragraphs.map((p, i) => (
