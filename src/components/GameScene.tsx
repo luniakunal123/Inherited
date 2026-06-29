@@ -73,6 +73,14 @@ const BG_COLOURS: Record<string, string> = {
 
 type Props = { playerName: string }
 
+// Preload all scene images on mount
+const ALL_IMAGES = [
+  Act1, Act2, Act3, Act4, Act5, Act6, Act7, Act8, Act9, Act10, Act11,
+  Act200, Act201, Act202, Act203, Act204, Act205,
+  Option1, Option2, Option3,
+]
+ALL_IMAGES.forEach(src => { const img = new Image(); img.src = src })
+
 const getAmbientScene = (img: string) => {
   if (img === 'Act1') return 'classroom'
   if (img === 'Act4') return 'window'
