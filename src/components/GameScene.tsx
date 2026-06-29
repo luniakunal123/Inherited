@@ -358,11 +358,11 @@ export default function GameScene({ playerName }: Props) {
       position: 'relative',
       overflow: 'hidden',
       display: 'flex',
-      alignItems: tags['image'] === 'Act6' ? 'flex-start' : tags['image'] === 'Act200' ? 'flex-end' : 'flex-end',
-      justifyContent: tags['image'] === 'Act6' ? 'flex-start' : tags['image'] === 'Act200' ? 'flex-end' : 'center',
-      paddingBottom: tags['image'] === 'Act6' ? '0' : '1rem',
-      paddingTop: tags['image'] === 'Act6' ? '1rem' : '0',
-      paddingLeft: tags['image'] === 'Act6' ? '1rem' : '0',
+      alignItems: (['Act5', 'Act6', 'Act11', 'Act201', 'Act203', 'Act204', 'Act205', 'Option1', 'Option2', 'Option3'].includes(tags['image'])) ? 'flex-start' : tags['image'] === 'Act200' ? 'flex-end' : 'flex-end',
+      justifyContent: (['Act5', 'Act6', 'Act11', 'Act201', 'Act203', 'Act204', 'Act205', 'Option1', 'Option2', 'Option3'].includes(tags['image'])) ? 'flex-start' : tags['image'] === 'Act200' ? 'flex-end' : 'center',
+      paddingBottom: (['Act5', 'Act6', 'Act11', 'Act201', 'Act203', 'Act204', 'Act205', 'Option1', 'Option2', 'Option3'].includes(tags['image'])) ? '0' : '1rem',
+      paddingTop: (['Act5', 'Act6', 'Act11', 'Act201', 'Act203', 'Act204', 'Act205', 'Option1', 'Option2', 'Option3'].includes(tags['image'])) ? '1rem' : '0',
+      paddingLeft: (['Act5', 'Act6', 'Act11', 'Act201', 'Act203', 'Act204', 'Act205', 'Option1', 'Option2', 'Option3'].includes(tags['image'])) ? '1rem' : '0',
       paddingRight: tags['image'] === 'Act200' ? '1rem' : '0',
       animation: screenShaking ? 'screenShake 0.6s ease' : 'none',
     }}>
@@ -1094,10 +1094,61 @@ export default function GameScene({ playerName }: Props) {
         />
       )}
 
-      <div style={{
-        position: 'relative', zIndex: 2, width: '92%',
+{/* Act204 — narrative text fixed top, choices fixed bottom */}
+{tags['image'] === 'Act204' && (
+        <>
+          <div style={{
+            position: 'fixed', bottom: '1rem', left: '4%',
+            width: state.choices.length > 0 ? '92%' : '50%',
+            zIndex: 2, background: 'rgba(0,0,0,0.25)', borderRadius: '8px',
+            padding: '0.8rem 1rem',
+          }}>
+            {state.paragraphs.map((p, i) => (
+              <p key={i} style={{ fontSize: '0.85rem', lineHeight: 1.6, margin: 0, marginBottom: '0.5em' }}>{p}</p>
+            ))}
+            {state.choices.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', marginTop: '0.7rem' }}>
+                {state.choices.map(choice => (
+                  <ChoiceButton key={choice.index} choice={choice} onChoose={choose} lockedTapped={lockedTapped} onLockedTap={() => setLockedTapped(true)} />
+                ))}
+              </div>
+            )}
+            {state.choices.length === 0 && showContinue && !transitionTag && (
+              <button
+                onClick={() => choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })}
+                style={{
+                  background: 'transparent', border: 'none',
+                  color: 'rgba(212,207,200,0.5)', cursor: 'pointer',
+                  fontFamily: 'inherit', fontSize: '0.85rem', padding: '0',
+                  display: 'flex', alignItems: 'center', gap: '0.6rem',
+                  letterSpacing: '0.08em', marginTop: '0.8rem',
+                }}
+              >
+                <span>continue</span><span>→</span>
+              </button>
+            )}
+          </div>
+        </>
+      )}
+
+<div style={{
+        display: tags['image'] === 'Act204' ? 'none' : 'block',
+        position: (tags['image'] === 'Act5' || tags['image'] === 'Act8') ? 'fixed' : 'relative',
+        zIndex: 2, width: '92%',
         background: 'rgba(0,0,0,0.25)', borderRadius: '8px',
         padding: '0.8rem 1rem', border: 'none',
+        ...(tags['image'] === 'Act5' && state.choices.length === 0 ? {
+          top: '1rem', left: '4%', width: '50%',
+        } : {}),
+        ...(tags['image'] === 'Act5' && state.choices.length > 0 ? {
+          bottom: '1rem', left: '4%', width: '50%', top: 'auto',
+        } : {}),
+        ...(tags['image'] === 'Act8' && state.choices.length === 0 ? {
+          top: '1rem', left: '4%', width: '50%',
+        } : {}),
+        ...(tags['image'] === 'Act8' && state.choices.length > 0 ? {
+          bottom: '1rem', left: '4%', width: '50%', top: 'auto',
+        } : {}),
       }}>
         {state.paragraphs.map((p, i) => (
           <p key={i} style={{
@@ -1122,7 +1173,7 @@ export default function GameScene({ playerName }: Props) {
           </div>
         )}
 
-        {state.choices.length === 0 && showContinue && !transitionTag && (
+{state.choices.length === 0 && showContinue && !transitionTag && tags['image'] !== 'Act204' && (
           <button
             onClick={() => {
               choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })
