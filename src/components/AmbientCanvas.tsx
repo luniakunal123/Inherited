@@ -18,19 +18,20 @@ const spawnMote = (w: number, h: number, scene?: string): DustMote => {
   const windowW  = w * 0.08
   const windowY1 = h * 0.05
   const windowY2 = h * 0.78
-  const maxLife  = isWindow ? rand(18000, 28000) : rand(6000, 14000)
+  const maxLife  = isWindow ? rand(8000, 12000) : rand(6000, 14000)
 
   const isGate = scene === 'gate'
+  const isHome = scene === 'home'
   return {
-    x:          isWindow ? rand(w * 0.23, w * 0.33) : isGate ? rand(w * 0.30, w * 0.50) : rand(windowX - windowW, windowX + windowW),
-    y:          isWindow ? rand(-20, 0)              : isGate ? rand(h * 0.05, h * 0.45) : rand(windowY1, windowY2),
+    x:          isWindow ? rand(w * 0.23, w * 0.33) : isGate ? rand(w * 0.30, w * 0.50) : isHome ? rand(0, w) : rand(windowX - windowW, windowX + windowW),
+    y:          isWindow ? rand(-20, 0)              : isGate ? rand(h * 0.05, h * 0.45) : isHome ? rand(0, h) : rand(windowY1, windowY2),
     radius:     rand(0.6, 2.0),
     opacity:    0,
-    speedX:     isWindow ? rand(0.12, 0.22)          : isGate ? rand(-0.18, -0.06)       : rand(0.08, 0.25),
-    speedY:     isWindow ? rand(0.18, 0.30)          : isGate ? rand(0.05, 0.18)         : rand(-0.02, 0.06),
+    speedX:     isWindow ? rand(0.12, 0.22)          : isGate ? rand(-0.18, -0.06)       : isHome ? rand(-0.02, 0.02) : rand(0.08, 0.25),
+    speedY:     isWindow ? rand(0.18, 0.30)          : isGate ? rand(0.05, 0.18)         : isHome ? rand(0.08, 0.18) : rand(-0.02, 0.06),
     wobble:     rand(0, Math.PI * 2),
     wobbleSpeed: rand(0.008, 0.022),
-    wobbleAmp:  isWindow ? rand(0.05, 0.2)           : isGate ? rand(0.1, 0.3)           : rand(0.1, 0.5),
+    wobbleAmp:  isWindow ? rand(0.05, 0.2)           : isGate ? rand(0.1, 0.3)           : isHome ? rand(0.05, 0.15) : rand(0.1, 0.5),
     life:       0,
     maxLife,
   }
@@ -60,9 +61,9 @@ const AmbientCanvas = ({ scene = "classroom", active = true }: AmbientCanvasProp
 
     const motes: DustMote[] = Array.from({ length: COUNT }, () => {
       const m = spawnMote(canvas.width, canvas.height, scene)
-      m.x    = (scene === 'window' || scene === 'home') ? rand(canvas.width * 0.23, canvas.width * 0.48) : scene === 'gate' ? rand(canvas.width * 0.30, canvas.width * 0.52) : rand(canvas.width * 0.05, canvas.width * 0.85)
-      m.y    = (scene === 'window' || scene === 'home') ? rand(0, canvas.height * 0.35) : scene === 'gate' ? rand(0, canvas.height * 0.6) : m.y
-      if (scene === 'gate') m.speedX = rand(-0.35, -0.12)
+      m.x    = scene === 'window' ? rand(canvas.width * 0.23, canvas.width * 0.48) : scene === 'home' ? rand(0, canvas.width) : scene === 'gate' ? rand(canvas.width * 0.30, canvas.width * 0.52) : rand(canvas.width * 0.05, canvas.width * 0.85)
+      m.y    = scene === 'window' ? rand(0, canvas.height * 0.35) : scene === 'home' ? rand(0, canvas.height) : scene === 'gate' ? rand(0, canvas.height * 0.6) : m.y
+      if (scene === 'gate') m.speedX = rand(-0.18, -0.06)
       m.life = rand(0, m.maxLife * 0.7)
       m.opacity = rand(0.05, 0.35)
       return m
@@ -129,6 +130,7 @@ const AmbientCanvas = ({ scene = "classroom", active = true }: AmbientCanvasProp
 
   return (
     <canvas
+      key={scene}
       ref={canvasRef}
       style={{
         position: "fixed", top: 0, left: 0,

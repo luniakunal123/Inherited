@@ -36,6 +36,11 @@ import TelephoneView from '../assets/backgrounds/telephone.png'
 import ShoesView from '../assets/backgrounds/Shoes.png'
 import BagView from '../assets/backgrounds/bag.png'
 import BoxView from '../assets/backgrounds/box.png'
+import TeaView from '../assets/backgrounds/tea.png'
+import OfficeBagView from '../assets/backgrounds/officebag.png'
+import FamilyView from '../assets/backgrounds/family.png'
+import PaperView from '../assets/backgrounds/paper.png'
+import TrophyView from '../assets/backgrounds/trophy.png'
 import AmbientCanvas from "./AmbientCanvas";
 import Chalkboard from "./Chalkboard";
 import CalendarPopup from "./CalendarPopup";
@@ -71,7 +76,7 @@ type Props = { playerName: string }
 const getAmbientScene = (img: string) => {
   if (img === 'Act1') return 'classroom'
   if (img === 'Act4') return 'window'
-  if (img === 'Act5') return 'home'
+  if (img === 'Act5') return 'default'
   if (img === 'Act6') return 'gate'
   if (img === 'Act2' || img === 'Act3') return 'kitchen'
   return 'default'
@@ -94,7 +99,7 @@ export default function GameScene({ playerName }: Props) {
   const isWishScene = tags['wish'] === 'true'
 
   const isIdentityScene = state.paragraphs.join(' ').includes('You are not sure it was what you meant to become')
-  const isFlipScene = state.paragraphs.join(' ').includes('You are not') && state.paragraphs.join(' ').includes('anymore') && !isIdentityScene
+  const isFlipScene = state.paragraphs.join(' ').includes("The memory doesn't change.")
 
   const readingDelay = (isIdentityScene || isFlipScene)
     ? 5000
@@ -149,6 +154,13 @@ export default function GameScene({ playerName }: Props) {
   const [showShoes, setShowShoes] = useState(false)
   const [showBag, setShowBag] = useState(false)
   const [showBox, setShowBox] = useState(false)
+  const [showTea, setShowTea] = useState(false)
+  const [showOfficeBag, setShowOfficeBag] = useState(false)
+  const [showFamily, setShowFamily] = useState(false)
+  const [showPaper, setShowPaper] = useState(false)
+  const [showTrophy, setShowTrophy] = useState(false)
+  const [showRoomBlock, setShowRoomBlock] = useState(false)
+  const [roomBlockDone, setRoomBlockDone] = useState(false)
   const [showKitchenBlock, setShowKitchenBlock] = useState(false)
   const [kitchenBlockDone, setKitchenBlockDone] = useState(false)
 
@@ -284,32 +296,10 @@ export default function GameScene({ playerName }: Props) {
 
   if (isFlipScene) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: bg,
-        position: 'relative',
-        overflow: 'hidden',
-        transition: 'background-color 1.2s ease',
-      }}>
-        {state.paragraphs.map((p, i) => (
-          <p key={i} style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            fontSize: '1.6rem',
-            color: 'rgba(212,207,200,0.85)',
-            textAlign: 'center',
-            letterSpacing: '0.03em',
-            margin: 0,
-            width: '85%',
-            lineHeight: 1.6,
-            animation: 'fadeIn 2s ease forwards',
-          }}>{p}</p>
-        ))}
-
-       
-      </div>
+      <FlipScene
+        paragraphs={state.paragraphs}
+        onDone={() => choose({ index: -1, text: '', isLocked: false, isPermanentLock: false, isFaint: false })}
+      />
     )
   }
 
@@ -336,7 +326,7 @@ export default function GameScene({ playerName }: Props) {
             zIndex: 1,
           }} />
         )}
-        <AmbientCanvas scene={getAmbientScene(tags['image'] ?? '')} active={true} />
+        <AmbientCanvas key={tags['image'] ?? 'default'} scene={getAmbientScene(tags['image'] ?? '')} active={true} />
         <p style={{
           position: 'absolute',
           top: '50%',
@@ -393,7 +383,7 @@ export default function GameScene({ playerName }: Props) {
         }} />
       )}
 
-<AmbientCanvas scene={getAmbientScene(tags['image'] ?? '')} active={transition === 'idle'} />
+<AmbientCanvas key={tags['image'] ?? 'default'} scene={getAmbientScene(tags['image'] ?? '')} active={transition === 'idle'} />
 
       {/* Drawing overlay on blackboard in scene */}
       {(tags['image'] === 'Act1' || tags['image'] === 'Act3') && boardDrawing && !showChalkboard && (
@@ -542,6 +532,300 @@ export default function GameScene({ playerName }: Props) {
         </div>
       )}
 
+      {/* ○ Room enter hint — Act200 only */}
+      {tags['image'] === 'Act200' && !showRoomBlock && !roomBlockDone && (
+        <PulseCircleOnce onClick={() => { setShowRoomBlock(true); setRoomBlockDone(true) }} top="15%" left="40%" />
+      )}
+
+      {showRoomBlock && (
+        <RoomBlockMessage onClose={() => setShowRoomBlock(false)} />
+      )}
+
+      {/* ✦ Trophy hint — Act200 only */}
+      {tags['image'] === 'Act200' && !showTrophy && (
+        <StarHint onClick={() => setShowTrophy(true)} top="8%" left="94%" />
+      )}
+
+      {showTrophy && (
+        <div
+          onClick={() => setShowTrophy(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "flex-start", justifyContent: "center",
+            flexDirection: "column",
+            paddingTop: "6%",
+            gap: "2rem",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <p style={{
+            color: "rgba(212,207,200,0.75)",
+            fontSize: "0.95rem",
+            fontStyle: "italic",
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            width: "100%",
+            margin: 0,
+            lineHeight: 1.8,
+            animation: "fadeIn 1.2s ease forwards",
+          }}>
+            You thought success would protect him.
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+            <img
+              src={TrophyView}
+              style={{
+                maxWidth: "60vw", maxHeight: "68vh",
+                objectFit: "contain",
+                borderRadius: "4px",
+                boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+              }}
+            />
+          </div>
+          <div style={{
+            position: "absolute", bottom: "5%", left: "50%",
+            transform: "translateX(-50%)",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ✦ Newspaper hint — Act200 only */}
+      {tags['image'] === 'Act200' && !showPaper && (
+        <StarHint onClick={() => setShowPaper(true)} top="43%" left="6%" />
+      )}
+
+      {showPaper && (
+        <div
+          onClick={() => setShowPaper(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "flex-start", justifyContent: "center",
+            flexDirection: "column",
+            paddingTop: "6%",
+            gap: "2rem",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <p style={{
+            color: "rgba(212,207,200,0.75)",
+            fontSize: "0.95rem",
+            fontStyle: "italic",
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            width: "100%",
+            margin: 0,
+            lineHeight: 1.8,
+            animation: "fadeIn 1.2s ease forwards",
+          }}>
+            The paper is open.<br/>You haven't read a word.
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+            <img
+              src={PaperView}
+              style={{
+                maxWidth: "60vw", maxHeight: "68vh",
+                objectFit: "contain",
+                borderRadius: "4px",
+                boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+              }}
+            />
+          </div>
+          <div style={{
+            position: "absolute", bottom: "5%", left: "50%",
+            transform: "translateX(-50%)",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ✦ Family photo hint — Act200 only */}
+      {tags['image'] === 'Act200' && !showFamily && (
+        <StarHint onClick={() => setShowFamily(true)} top="8%" left="68%" />
+      )}
+
+      {showFamily && (
+        <div
+          onClick={() => setShowFamily(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "flex-start", justifyContent: "center",
+            flexDirection: "column",
+            paddingTop: "6%",
+            gap: "2rem",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <p style={{
+            color: "rgba(212,207,200,0.75)",
+            fontSize: "0.95rem",
+            fontStyle: "italic",
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            width: "100%",
+            margin: 0,
+            lineHeight: 1.8,
+            animation: "fadeIn 1.2s ease forwards",
+          }}>
+            You wanted a better life for him.<br/>You just didn't know how.
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+            <img
+              src={FamilyView}
+              style={{
+                maxWidth: "60vw", maxHeight: "68vh",
+                objectFit: "contain",
+                borderRadius: "4px",
+                boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+              }}
+            />
+          </div>
+          <div style={{
+            position: "absolute", bottom: "5%", left: "50%",
+            transform: "translateX(-50%)",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ✦ Office bag hint — Act200 only */}
+      {tags['image'] === 'Act200' && !showOfficeBag && (
+        <StarHint onClick={() => setShowOfficeBag(true)} top="70%" left="29%" />
+      )}
+
+      {showOfficeBag && (
+        <div
+          onClick={() => setShowOfficeBag(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "flex-start", justifyContent: "center",
+            flexDirection: "column",
+            paddingTop: "6%",
+            gap: "2rem",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <p style={{
+            color: "rgba(212,207,200,0.75)",
+            fontSize: "0.95rem",
+            fontStyle: "italic",
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            width: "100%",
+            margin: 0,
+            lineHeight: 1.8,
+            animation: "fadeIn 1.2s ease forwards",
+          }}>
+            You haven't unpacked.<br/>You weren't supposed to be home this early.
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+            <img
+              src={OfficeBagView}
+              style={{
+                maxWidth: "60vw", maxHeight: "68vh",
+                objectFit: "contain",
+                borderRadius: "4px",
+                boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+              }}
+            />
+          </div>
+          <div style={{
+            position: "absolute", bottom: "5%", left: "50%",
+            transform: "translateX(-50%)",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
+      {/* ✦ Tea cup hint — Act200 only */}
+      {tags['image'] === 'Act200' && !showTea && (
+        <StarHint onClick={() => setShowTea(true)} top="52%" left="19%" />
+      )}
+
+      {showTea && (
+        <div
+          onClick={() => setShowTea(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 490,
+            background: "rgba(0,0,0,0.88)",
+            display: "flex", alignItems: "flex-start", justifyContent: "center",
+            flexDirection: "column",
+            paddingTop: "6%",
+            gap: "2rem",
+            animation: "fadeIn 0.4s ease forwards",
+          }}
+        >
+          <p style={{
+            color: "rgba(212,207,200,0.75)",
+            fontSize: "0.95rem",
+            fontStyle: "italic",
+            letterSpacing: "0.08em",
+            textAlign: "center",
+            width: "100%",
+            margin: 0,
+            lineHeight: 1.8,
+            animation: "fadeIn 1.2s ease forwards",
+          }}>
+            The tea has gone cold.<br/>You never took a sip.
+          </p>
+          <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+            <img
+              src={TeaView}
+              style={{
+                maxWidth: "60vw", maxHeight: "68vh",
+                objectFit: "contain",
+                borderRadius: "4px",
+                boxShadow: "0 0 60px rgba(0,0,0,0.9)",
+              }}
+            />
+          </div>
+          <div style={{
+            position: "absolute", bottom: "5%", left: "50%",
+            transform: "translateX(-50%)",
+            color: "rgba(212,207,200,0.6)",
+            fontSize: "0.65rem", letterSpacing: "0.1em",
+            fontStyle: "italic", zIndex: 3,
+            background: "rgba(0,0,0,0.35)",
+            padding: "4px 12px",
+            borderRadius: "4px",
+          }}>
+            tap to look away
+          </div>
+        </div>
+      )}
+
       {/* ✦ Geometry box hint — Act11 only */}
       {tags['image'] === 'Act11' && !showBox && (
         <StarHint onClick={() => setShowBox(true)} top="85%" left="54%" />
@@ -601,7 +885,7 @@ export default function GameScene({ playerName }: Props) {
 
       {/* ✦ Telephone hint — Act4 only */}
       {tags['image'] === 'Act4' && !showTelephone && (
-        <StarHint onClick={() => setShowTelephone(true)} top="24%" left="15%" />
+        <StarHint onClick={() => setShowTelephone(true)} top="22%" left="15%" />
       )}
 
       {/* Telephone overlay — auto closes after 5s */}
@@ -982,6 +1266,43 @@ function EndScreen() {
   )
 }
 
+function RoomBlockMessage({ onClose }: { onClose: () => void }) {
+  const [opacity, setOpacity] = useState(0)
+
+  useEffect(() => {
+    const fadeIn = setTimeout(() => setOpacity(1), 30)
+    const fadeOut = setTimeout(() => setOpacity(0), 4000)
+    const close = setTimeout(() => onClose(), 5000)
+    return () => { clearTimeout(fadeIn); clearTimeout(fadeOut); clearTimeout(close) }
+  }, [])
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 490,
+        display: "flex", alignItems: "flex-start", justifyContent: "center",
+        paddingTop: "6%",
+        opacity,
+        transition: "opacity 0.8s ease",
+        pointerEvents: "auto",
+      }}
+    >
+      <p style={{
+        color: "rgba(212,207,200,0.75)",
+        fontSize: "0.95rem",
+        fontStyle: "italic",
+        letterSpacing: "0.08em",
+        textAlign: "center",
+        margin: 0,
+        lineHeight: 1.8,
+      }}>
+        They're waiting.
+      </p>
+    </div>
+  )
+}
+
 function KitchenBlockMessage({ onClose }: { onClose: () => void }) {
   const [opacity, setOpacity] = useState(0)
 
@@ -1120,6 +1441,51 @@ function PulseCircleOnce({ onClick, top, left }: { onClick: () => void; top: str
           transition: "transform 0.04s linear, background 0.04s linear",
         }}
       />
+    </div>
+  )
+}
+
+function FlipScene({ paragraphs, onDone }: { paragraphs: string[]; onDone: () => void }) {
+  const [phase, setPhase] = useState<'in' | 'hold' | 'out'>('in')
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase('hold'), 500)   // fade in quickly
+    const t2 = setTimeout(() => setPhase('out'), 4500)   // start fading at 4.5s
+    const t3 = setTimeout(() => onDone(), 6000)          // advance at 6s
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
+  }, [])
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: '#000',
+      position: 'relative',
+      overflow: 'hidden',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}>
+      <div style={{
+        textAlign: 'center',
+        opacity: phase === 'hold' ? 1 : 0,
+        transition: phase === 'hold' ? 'opacity 1s ease' : 'opacity 1.5s ease',
+        width: '80%',
+        background: 'none',
+      }}>
+        {paragraphs.map((p, i) => (
+          <p key={i} style={{
+            fontSize: '1.1rem',
+            color: 'rgba(212,207,200,0.82)',
+            textAlign: 'center',
+            letterSpacing: '0.08em',
+            fontStyle: 'italic',
+            margin: 0,
+            marginBottom: '0.5em',
+            lineHeight: 1.9,
+            background: 'none',
+          }}>{p}</p>
+        ))}
+      </div>
     </div>
   )
 }

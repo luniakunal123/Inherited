@@ -303,7 +303,8 @@ You are not sure it was what you meant to become.
 === act3_screen1 ===
 # character:none
 # background:fade_white
-You are not {player_name} anymore.
+The memory doesn't change.
+The person remembering it does.
 [BREAK]
 -> act3_screen2
 
@@ -492,8 +493,7 @@ Then your mother picks up.
 You say the number before she asks.
 There is a silence on the other end.
 Then: "Okay. Come home."
-Two words.
-You don't know yet what to do with them.
+Her voice is calmer than you expected.
 [BREAK]
 -> act4_ending
 
