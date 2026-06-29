@@ -41,9 +41,11 @@ import OfficeBagView from '../assets/backgrounds/officebag.png'
 import FamilyView from '../assets/backgrounds/family.png'
 import PaperView from '../assets/backgrounds/paper.png'
 import TrophyView from '../assets/backgrounds/trophy.png'
+import LogoView from '../assets/backgrounds/logo.png'
 import AmbientCanvas from "./AmbientCanvas";
 import Chalkboard from "./Chalkboard";
 import CalendarPopup from "./CalendarPopup";
+import FeedbackScreen from "./FeedbackScreen";
 
 const SCENE_IMAGES: Record<string, string> = {
   Act1, Act2, Act3, Act4, Act5, Act6, Act7, Act8, Act9, Act10, Act11,Act200,Act201,Act202,Act203,Act204,Act205,
@@ -1317,6 +1319,9 @@ function ChoiceButton({ choice, onChoose, lockedTapped, onLockedTap }: {
 
 function EndScreen() {
   const [visible, setVisible] = useState(0)
+  const [textFadeOut, setTextFadeOut] = useState(false)
+  const [showLogo, setShowLogo] = useState(false)
+  const [showFeedback, setShowFeedback] = useState(false)
 
   useEffect(() => {
     let current = 0
@@ -1325,20 +1330,68 @@ function EndScreen() {
       setVisible(current)
       if (current >= 3) clearInterval(interval)
     }, 1800)
-    return () => clearInterval(interval)
+    const fadeOutTimer = setTimeout(() => setTextFadeOut(true), 1800 * 3 + 2000)
+    const logoTimer = setTimeout(() => setShowLogo(true), 1800 * 3 + 3500)
+    // Show feedback 3s after logo appears
+    const feedbackTimer = setTimeout(() => setShowFeedback(true), 1800 * 3 + 6500)
+    return () => { clearInterval(interval); clearTimeout(fadeOutTimer); clearTimeout(logoTimer); clearTimeout(feedbackTimer) }
   }, [])
 
   const lines = ['You are sixteen.', 'You were eight.', 'You will be both for the rest of your life.']
 
   return (
     <div style={{
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', minHeight: '100vh', gap: '0.8em',
-      textAlign: 'center', padding: '2rem',
+      position: 'relative',
+      minHeight: '100vh',
+      background: '#000',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
-      {lines.map((line, i) => (
-        <p key={i} style={{ fontSize: '1rem', opacity: visible > i ? 1 : 0, transition: 'opacity 0.8s ease', margin: 0 }}>{line}</p>
-      ))}
+      {/* Text layer */}
+      <div style={{
+        position: 'absolute',
+        display: 'flex', flexDirection: 'column', alignItems: 'center',
+        gap: '0.8em', textAlign: 'center', padding: '2rem',
+        opacity: textFadeOut ? 0 : 1,
+        transition: 'opacity 1.5s ease',
+        pointerEvents: 'none',
+      }}>
+        {lines.map((line, i) => (
+          <p key={i} style={{ fontSize: '1rem', opacity: visible > i ? 1 : 0, transition: 'opacity 0.8s ease', margin: 0 }}>{line}</p>
+        ))}
+      </div>
+
+      {showFeedback && <FeedbackScreen formId="mdardkpr" />}
+
+      {/* Logo layer — fullscreen centered */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        display: 'flex', flexDirection: 'column',
+        alignItems: 'center', justifyContent: 'center',
+        opacity: showLogo && !showFeedback ? 1 : 0,
+        transition: 'opacity 2s ease',
+        pointerEvents: 'none',
+      }}>
+        <img
+          src={LogoView}
+          style={{
+            maxWidth: '92vw',
+            maxHeight: '92vh',
+            width: 'auto',
+            height: 'auto',
+            objectFit: 'contain',
+            filter: 'brightness(0.85)',
+          }}
+        />
+        <p style={{
+          fontSize: '0.65rem',
+          color: 'rgba(212,207,200,0.3)',
+          letterSpacing: '0.12em',
+          marginTop: '1rem',
+          margin: '1rem 0 0',
+        }}>
+          © 2026 Inherited. All rights reserved.
+        </p>
+      </div>
     </div>
   )
 }
